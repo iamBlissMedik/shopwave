@@ -11,8 +11,7 @@ set of shared packages (UI, hooks, API client, types, design tokens).
 > Small in features but production-shaped in structure. No payments SDK, no
 > microservices — just the core marketplace flow done with the right patterns.
 
-📄 Interview prep: **[frontend-interview.md](./frontend-interview.md)** · **[backend-interview.md](./backend-interview.md)** ·
-**[docs/TEST-PLAN.md](./docs/TEST-PLAN.md)** — test cases & acceptance criteria
+📄 **[docs/TEST-PLAN.md](./docs/TEST-PLAN.md)** — test cases & acceptance criteria
 
 ---
 
@@ -65,7 +64,7 @@ shopwave/
 ## Getting started
 
 ### Prerequisites
-**Node 20+**, **pnpm 9+** (`npm i -g pnpm`), **PostgreSQL** running locally.
+**Node 22+** (see `.nvmrc`), **pnpm 11+** (`npm i -g pnpm`), **PostgreSQL** running locally.
 
 ### Setup
 ```bash
@@ -152,13 +151,13 @@ List endpoints return `{ data, meta }` with consistent pagination metadata.
 
 ## Testing, docs & Storybook
 
-**85 automated tests** across 4 packages (`pnpm test`):
+**104 automated tests** across 4 workspaces (`pnpm test`):
 
 - **API integration** (`apps/api`, 41) — Vitest + Supertest against an isolated
   Postgres test DB (`createdb shopwave_test`): auth, catalogue, the checkout
   transaction, access control, marketplace integrity, guest-cart merge, dashboards,
   plus an OpenAPI docs-coverage test.
-- **Component** (`packages/ui`, 33), **hooks** (7), **api-client** (4).
+- **Component** (`packages/ui`, 52), **hooks** (7), **api-client** (4).
 
 Every `packages/ui` component ships **JSDoc + a story + a test**; every API route
 is in the OpenAPI table (both enforced — see [CONTRIBUTING.md](./CONTRIBUTING.md)).
