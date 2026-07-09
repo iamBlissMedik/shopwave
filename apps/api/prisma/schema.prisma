@@ -1,0 +1,132 @@
+// Prisma schema — the single source of truth for the database shape.
+// Run `pnpm db:migrate` to apply changes and `pnpm db:generate` to refresh the client.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER // customer — shops, carts, checks out
+  MERCHANT // seller — owns and manages their own products
+  ADMIN // platform operator — manages users & moderates the catalogue
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String // bcrypt hash — never the plaintext
+  name      String
+  role      Role      @default(USER)
+  // Only meaningful for MERCHANT accounts — their public storefront name.
+  storeName String?
+  cart      Cart?
+  orders    Order[]
+  // Products this user sells (only populated for merchants).
+  products  Product[] @relation("MerchantProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  // Price is stored in the smallest currency unit (cents) as an Int.
+  // This avoids floating-point rounding errors that come with money in floats.
+  price       Int
+  imageUrl    String
+  category    String
+  stock       Int         @default(0)
+  // Soft-delete / visibility flag. Merchants & admins can hide a product
+  // without destroying order history that references it.
+  isActive    Boolean     @default(true)
+  // The merchant who owns this product. All write access is scoped to them.
+  merchant    User        @relation("MerchantProducts", fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId  String
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Indexes that back our list filters / sorting / ownership queries.
+  @@index([category])
+  @@index([price])
+  @@index([createdAt])
+  @@index([merchantId])
+  @@index([isActive])
+}
+
+model Cart {
+  id String @id @default(cuid())
+  // A cart belongs to EITHER a logged-in user OR an anonymous guest session
+  // (identified by an httpOnly cookie). Exactly one of userId / sessionId is set.
+  // Both are unique and nullable — Postgres allows many NULLs, so distinct guest
+  // carts (all userId = NULL) never collide, and vice-versa.
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?    @unique
+  sessionId String?    @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // A product can appear only once per cart — quantity tracks the rest.
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  items     OrderItem[]
+  // Snapshot of the total at checkout time (cents).
+  total     Int
+  status    OrderStatus @default(PENDING)
+  // Optional client-supplied idempotency key: a retried checkout with the same
+  // key returns the original order instead of creating a duplicate. Unique so a
+  // concurrent double-submit collides at the DB and only one order is created.
+  idempotencyKey String? @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  // Price snapshot at purchase time so historical orders are immutable
+  // even if the product price later changes.
+  price     Int
+  quantity  Int
+
+  // FK indexes: orderId backs the order→items join; productId backs the
+  // merchant sales feed (filters order items by their product's merchant).
+  @@index([orderId])
+  @@index([productId])
+}

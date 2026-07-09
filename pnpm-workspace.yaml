@@ -1,0 +1,16 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Skip the implicit "are deps up to date?" check before every `pnpm run`.
+verifyDepsBeforeRun: false
+
+# pnpm blocks lifecycle scripts by default. These packages legitimately need
+# their build/postinstall steps (Prisma generates its query engine, esbuild
+# provides tsx's native binary).
+onlyBuiltDependencies:
+  - "@prisma/client"
+  - "@prisma/engines"
+  - prisma
+  - esbuild
+  - unrs-resolver

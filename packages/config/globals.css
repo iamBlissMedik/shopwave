@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Global design tokens — imported by every app's own globals.css.
+ *
+ * Palette + semantics are derived from the FunRadar design system
+ * (funradar-web-apps/packages/tokens): brand purple #4f1cc9, a 0→950 grey ramp,
+ * and the designer's light/dark semantic mappings. Values are stored as RGB
+ * channel triplets so Tailwind's `/<alpha>` opacity utilities keep working
+ * (e.g. `bg-brand/10`, `border-border/60`).
+ *
+ * :root = ☀️ light theme. .dark = 🌑 dark theme. The <html> element gets the
+ * `dark` class toggled before paint by @shopwave/hooks (themeNoFlashScript).
+ *
+ * Fonts: body = Nunito Sans (humanist, warm), headings = Geist (clean, modern).
+ * The actual font files are loaded per-app via next/font and exposed as the
+ * --font-sans / --font-display CSS variables consumed below.
+ */
+:root {
+  /* ---- Surfaces (FunRadar bg-*) ---- */
+  --color-background: 250 250 250; /* grey-50-ish canvas (#fafafa) */
+  --color-surface: 255 255 255; /* white cards (#ffffff)         */
+  --color-surface-muted: 245 245 245; /* grey-100 (#f5f5f5)       */
+
+  /* ---- Text (FunRadar text-*) ---- */
+  --color-foreground: 23 23 23; /* grey-950 headers (#171717)     */
+  --color-muted: 92 92 92; /* grey-600 body (#5c5c5c)             */
+
+  /* ---- Lines (FunRadar stroke-secondary) ---- */
+  --color-border: 235 235 235; /* grey-200 (#ebebeb)              */
+
+  /* ---- Brand (FunRadar brand) ---- */
+  --color-brand: 79 28 201; /* brand-500 (#4f1cc9)                */
+  --color-brand-fg: 255 255 255; /* text on brand                 */
+
+  /* ---- Status ---- */
+  --color-success: 31 193 107; /* success-500 (#1fc16b)           */
+  --color-warning: 250 115 25; /* warning-500 (#fa7319)           */
+  --color-danger: 251 55 72; /* error-500 (#fb3748)               */
+
+  /* ---- Accents (FunRadar accent families) — for badges/tags/charts.
+     Light values are darkened enough to read as text on a faint tint. ---- */
+  --color-accent-teal: 28 201 165; /* teal-500 (#1cc9a5)          */
+  --color-accent-pink: 234 74 154; /* hibiscus-500 (#ea4a9a)      */
+  --color-accent-amber: 184 129 22; /* nugget-600 (#b88116)       */
+  --color-accent-lime: 114 158 18; /* atlantis-600 (#729e12)      */
+}
+
+.dark {
+  /* ---- Surfaces ---- */
+  --color-background: 23 23 23; /* grey-950 (#171717)             */
+  --color-surface: 28 28 28; /* grey-900 raised (#1c1c1c)         */
+  --color-surface-muted: 38 38 38; /* grey-800 (#262626)          */
+
+  /* ---- Text ---- */
+  --color-foreground: 255 255 255; /* grey-0 (#ffffff)            */
+  --color-muted: 163 163 163; /* grey-400 (#a3a3a3)               */
+
+  /* ---- Lines ---- */
+  --color-border: 51 51 51; /* grey-700 (#333333)                 */
+
+  /* ---- Brand (brighter on dark per FunRadar text-brand) ---- */
+  --color-brand: 154 134 255; /* brand-400 (#9a86ff)              */
+  --color-brand-fg: 23 23 23; /* dark text on the lighter brand   */
+
+  /* ---- Status (lighter steps for dark surfaces) ---- */
+  --color-success: 62 224 137; /* success-400 (#3ee089)           */
+  --color-warning: 255 164 104; /* warning-400 (#ffa468)          */
+  --color-danger: 255 104 117; /* error-400 (#ff6875)             */
+
+  /* ---- Accents (brighter steps so they pop on dark surfaces) ---- */
+  --color-accent-teal: 50 207 172; /* teal-400 (#32cfac)          */
+  --color-accent-pink: 242 116 183; /* hibiscus-400 (#f274b7)     */
+  --color-accent-amber: 236 210 88; /* nugget-300 (#ecd258)       */
+  --color-accent-lime: 179 225 58; /* atlantis-400 (#b3e13a)      */
+}
+
+@layer base {
+  html {
+    /* --font-sans is set by next/font (Nunito Sans); this is the fallback.
+       --font-display maps to the self-hosted Geist variable from the `geist`
+       package (--font-geist-sans), with a system fallback. */
+    --font-sans: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-display: var(--font-geist-sans, 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif);
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    /* Subtle humanist refinements — kerning + optional ligatures. */
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Headings carry the display face for a crafted, editorial feel. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.011em; /* gentle optical tightening on large type */
+  }
+
+  /* Brand-tinted text selection — a small human touch. */
+  ::selection {
+    background-color: rgb(var(--color-brand) / 0.18);
+  }
+
+  /* Smooth the flip between themes (but not on first paint). */
+  body,
+  .themed {
+    @apply transition-colors duration-200;
+  }
+}
