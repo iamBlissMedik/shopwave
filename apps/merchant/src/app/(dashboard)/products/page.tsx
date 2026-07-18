@@ -13,7 +13,7 @@ import {
   formatPrice,
   type Column,
 } from '@shopwave/ui';
-import { useMerchantProducts, useUpdateProduct, type MerchantProductFilters } from '@shopwave/hooks';
+import { useMerchantProducts, useUpdateProduct, type MerchantProductFilters } from '@/hooks';
 import type { Product } from '@shopwave/types';
 
 export default function MerchantProductsPage() {

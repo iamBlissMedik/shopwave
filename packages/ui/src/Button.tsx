@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { Spinner } from './Spinner';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -34,7 +35,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       )}
       {...props}
     >
-      {isLoading ? 'Please wait…' : children}
+      {isLoading ? (
+        <>
+          <Spinner size="sm" />
+          Please wait…
+        </>
+      ) : (
+        children
+      )}
     </button>
   ),
 );

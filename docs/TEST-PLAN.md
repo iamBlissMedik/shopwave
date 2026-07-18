@@ -6,7 +6,7 @@ role-scoped frontends (`user`, `merchant`, `admin`). Each case lists
 **covered** (automated test file, or the manual live run on 2026-06-17).
 
 - ✅ = verified (automated and/or live). All cases below are currently passing.
-- **Automated suites:** `apps/api` (41, Vitest + Supertest), `packages/ui` (33, Vitest + Testing Library), `packages/hooks` (7, query keys / notify / data-hook), `packages/api-client` (4, error normalization). **85 total** across 4 packages.
+- **Automated suites:** `apps/api` (41, Vitest + Supertest), `packages/ui` (56, Vitest + Testing Library), `packages/hooks` (6, query keys / notify), `packages/api-client` (4, error normalization), `apps/user` (1, catalogue data-hook). **108 total** across 5 workspaces.
 - **Live smoke run:** API on `:4000` against the seeded `shopwave` DB; apps on `:3000/:3002/:3005`.
 
 ## How to run
@@ -319,7 +319,7 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Covered:** live.
 
 ### TC-BLD-03 — Tests green ✅
-- **Acceptance:** `pnpm test` runs 85 cases (41 API + 33 UI + 7 hooks + 4 api-client), all passing — gated in CI ([.github/workflows/ci.yml](../.github/workflows/ci.yml)).
+- **Acceptance:** `pnpm test` runs 108 cases (41 API + 56 UI + 6 hooks + 4 api-client + 1 user), all passing — gated in CI ([.github/workflows/ci.yml](../.github/workflows/ci.yml)).
 - **Covered:** live.
 
 ---

@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { ProductForm } from '@shopwave/ui';
-import { useMerchantProduct, useUpdateProduct } from '@shopwave/hooks';
+import { ProductForm, LoadingState } from '@shopwave/ui';
+import { useMerchantProduct, useUpdateProduct } from '@/hooks';
 
 export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +18,7 @@ export default function EditProductPage() {
       </Link>
       <h1 className="text-2xl font-bold">Edit product</h1>
 
-      {isLoading && <p className="py-12 text-center text-muted">Loading…</p>}
+      {isLoading && <LoadingState />}
       {isError && <p className="py-12 text-center text-danger">Product not found.</p>}
       {product && (
         <ProductForm

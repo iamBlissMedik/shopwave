@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@shopwave/types';
-import { useAuth, useAddToCart } from '@shopwave/hooks';
+import { useAuth } from '@shopwave/hooks';
+import { useAddToCart } from '@/hooks';
 import { ProductCard as UIProductCard } from '@shopwave/ui';
 
 /**

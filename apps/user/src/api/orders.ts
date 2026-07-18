@@ -1,5 +1,5 @@
 import type { Order, Paginated } from '@shopwave/types';
-import type { Http } from '../client';
+import type { Http } from '@shopwave/api-client';
 
 /** Customer order endpoints. */
 export function orderEndpoints(http: Http) {

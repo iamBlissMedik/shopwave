@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Trash2, Minus, Plus } from 'lucide-react';
-import { useCart, useUpdateCartItem, useRemoveCartItem, useCheckout } from '@shopwave/hooks';
-import { Button, Card, formatPrice, easeOut } from '@shopwave/ui';
+import { useCart, useUpdateCartItem, useRemoveCartItem, useCheckout } from '@/hooks';
+import { Button, Card, formatPrice, easeOut, LoadingState } from '@shopwave/ui';
 
 export default function CartPage() {
   const { data: cart, isLoading } = useCart();
@@ -13,7 +13,7 @@ export default function CartPage() {
   const removeItem = useRemoveCartItem();
   const checkout = useCheckout();
 
-  if (isLoading) return <p className="py-12 text-center text-muted">Loading cart…</p>;
+  if (isLoading) return <LoadingState message="Loading cart…" />;
 
   if (!cart || cart.items.length === 0) {
     return (

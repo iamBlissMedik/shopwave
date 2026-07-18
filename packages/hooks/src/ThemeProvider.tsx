@@ -1,17 +1,8 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { ThemeContext, type Theme } from './themeContext';
 
-export type Theme = 'light' | 'dark' | 'system';
-
-interface ThemeContextValue {
-  theme: Theme; // the user's preference
-  resolvedTheme: 'light' | 'dark'; // what is actually applied
-  setTheme: (theme: Theme) => void;
-  toggle: () => void; // cycles light → dark → system
-}
-
-const ThemeContext = createContext<ThemeContextValue | null>(null);
 const STORAGE_KEY = 'theme';
 
 function systemPrefersDark() {
@@ -70,23 +61,3 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     </ThemeContext.Provider>
   );
 }
-
-export function useTheme() {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used within a ThemeProvider');
-  return ctx;
-}
-
-/**
- * Runs before React hydrates to set the correct theme class immediately,
- * preventing a flash of the wrong theme (FOUC). Injected as an inline script.
- */
-export const themeNoFlashScript = `
-(function() {
-  try {
-    var t = localStorage.getItem('theme') || 'system';
-    var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (dark) document.documentElement.classList.add('dark');
-  } catch (e) {}
-})();
-`;

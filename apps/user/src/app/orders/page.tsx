@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useOrders } from '@shopwave/hooks';
-import { Pagination, Card, Badge, formatPrice, formatDate, statusTone } from '@shopwave/ui';
+import { useOrders } from '@/hooks';
+import { Pagination, Card, Badge, formatPrice, formatDate, statusTone, LoadingState } from '@shopwave/ui';
 
 export default function OrdersPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useOrders(page);
 
-  if (isLoading) return <p className="py-12 text-center text-muted">Loading orders…</p>;
+  if (isLoading) return <LoadingState message="Loading orders…" />;
 
   if (!data || data.data.length === 0) {
     return (

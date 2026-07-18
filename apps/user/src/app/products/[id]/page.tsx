@@ -4,8 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ShoppingCart, Store } from 'lucide-react';
-import { useProduct, useAddToCart, useAuth } from '@shopwave/hooks';
-import { Button, formatPrice } from '@shopwave/ui';
+import { useAuth } from '@shopwave/hooks';
+import { useProduct, useAddToCart } from '@/hooks';
+import { Button, formatPrice, LoadingState } from '@shopwave/ui';
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +14,7 @@ export default function ProductDetailPage() {
   const { data: product, isLoading, isError } = useProduct(id);
   const addToCart = useAddToCart();
 
-  if (isLoading) return <p className="py-12 text-center text-muted">Loading…</p>;
+  if (isLoading) return <LoadingState />;
   if (isError || !product) return <p className="py-12 text-center text-danger">Product not found.</p>;
 
   const outOfStock = product.stock <= 0;

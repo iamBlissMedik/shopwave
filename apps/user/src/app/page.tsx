@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useProducts, type ProductFilters } from '@shopwave/hooks';
-import { staggerContainer, Pagination } from '@shopwave/ui';
+import { useProducts, type ProductFilters } from '@/hooks';
+import { staggerContainer, Pagination, LoadingState } from '@shopwave/ui';
 import { ProductCard } from '@/components/ProductCard';
 import { Filters } from '@/components/Filters';
 
@@ -24,7 +24,7 @@ export default function HomePage() {
 
       <Filters filters={filters} onChange={patchFilters} />
 
-      {isLoading && <p className="py-12 text-center text-muted">Loading products…</p>}
+      {isLoading && <LoadingState message="Loading products…" />}
       {isError && <p className="py-12 text-center text-danger">Failed to load products.</p>}
 
       {data && data.data.length === 0 && (

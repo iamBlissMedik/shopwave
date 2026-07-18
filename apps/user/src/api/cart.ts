@@ -1,5 +1,5 @@
 import type { Cart } from '@shopwave/types';
-import type { Http } from '../client';
+import type { Http } from '@shopwave/api-client';
 
 /** Customer cart endpoints. Every mutation returns the fresh cart. */
 export function cartEndpoints(http: Http) {

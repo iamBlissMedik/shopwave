@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ProductForm } from '@shopwave/ui';
-import { useCreateProduct } from '@shopwave/hooks';
+import { useCreateProduct } from '@/hooks';
 
 export default function NewProductPage() {
   const create = useCreateProduct();

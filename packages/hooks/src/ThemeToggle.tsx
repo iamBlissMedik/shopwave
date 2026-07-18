@@ -2,7 +2,8 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun, Monitor } from 'lucide-react';
-import { useTheme, type Theme } from './useTheme';
+import { useTheme } from './useTheme';
+import type { Theme } from './themeContext';
 
 const icons: Record<Theme, typeof Sun> = {
   light: Sun,

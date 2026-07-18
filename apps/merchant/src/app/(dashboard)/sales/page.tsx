@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Badge, DataTable, statusTone, formatPrice, formatDate, type Column } from '@shopwave/ui';
-import { useMerchantSales } from '@shopwave/hooks';
+import { useMerchantSales } from '@/hooks';
 import type { Sale } from '@shopwave/types';
 
 export default function MerchantSalesPage() {

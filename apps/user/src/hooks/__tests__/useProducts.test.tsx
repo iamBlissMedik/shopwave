@@ -3,12 +3,13 @@ import type { ReactNode } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Mock the bound API client so the hook resolves without a real network call.
+// Mock this app's API client so the hook resolves without a real network call.
 // `vi.hoisted` lets the hoisted vi.mock factory reference `list`.
 const list = vi.hoisted(() => vi.fn());
-vi.mock('../client', () => ({ api: { products: { list, get: vi.fn(), categories: vi.fn() } } }));
+vi.mock('@/api', () => ({ api: { products: { list, get: vi.fn(), categories: vi.fn() } } }));
 
-import { useProducts, type ProductFilters } from '../useProducts';
+import { useProducts } from '../useProducts';
+import type { ProductFilters } from '@/api';
 
 function wrapper({ children }: { children: ReactNode }) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });

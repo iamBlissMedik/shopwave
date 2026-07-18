@@ -1,6 +1,6 @@
 'use client';
 
-import { useCategories, type ProductFilters } from '@shopwave/hooks';
+import { useCategories, type ProductFilters } from '@/hooks';
 import { FilterBar } from '@shopwave/ui';
 
 interface Props {

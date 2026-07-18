@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Badge, Button, DataTable, FilterBar, roleTone, formatDate, type Column } from '@shopwave/ui';
-import { useAdminUsers, useUpdateUserRole, useDeleteUser, useAuth, type AdminUserFilters } from '@shopwave/hooks';
+import { useAuth } from '@shopwave/hooks';
+import { useAdminUsers, useUpdateUserRole, useDeleteUser, type AdminUserFilters } from '@/hooks';
 import type { AdminUser, Role } from '@shopwave/types';
 
 const ROLES: Role[] = ['USER', 'MERCHANT', 'ADMIN'];

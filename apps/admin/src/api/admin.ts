@@ -1,5 +1,5 @@
 import type { AdminStats, AdminUser, Paginated, Product, Role } from '@shopwave/types';
-import type { Http } from '../client';
+import type { Http } from '@shopwave/api-client';
 
 export interface AdminUserFilters {
   page?: number;

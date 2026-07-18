@@ -1,9 +1,15 @@
 // Public surface of @shopwave/api-client.
 //
-//   import { createApiClient, createHttp, createEndpoints } from '@shopwave/api-client';
+// This package is deliberately thin: it owns the *transport* (the configured
+// axios instance, the typed `http` helpers and error normalization) plus the
+// one endpoint group that is shared by every app — `auth`. Each app builds and
+// owns its own domain endpoints (products, cart, orders, merchant, admin) on
+// top of this transport, so the storefront never ships merchant/admin code and
+// vice-versa.
+//
+//   import { createApiClient, createHttp, authEndpoints } from '@shopwave/api-client';
 //   const http = createHttp(createApiClient({ baseURL }));
-//   const api = createEndpoints(http);
-//   await api.products.list({ page: 1 });
+//   const api = { auth: authEndpoints(http), ...appDomainEndpoints };
 
 export {
   createApiClient,
@@ -13,7 +19,4 @@ export {
   type Http,
 } from './client';
 
-export { createEndpoints, type Endpoints } from './endpoints';
-export type { ProductFilters } from './endpoints/products';
-export type { MerchantProductFilters, ProductPayload } from './endpoints/merchant';
-export type { AdminUserFilters, AdminProductFilters } from './endpoints/admin';
+export { authEndpoints } from './endpoints/auth';

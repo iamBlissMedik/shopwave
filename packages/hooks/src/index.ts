@@ -1,5 +1,7 @@
-// Public surface of @shopwave/hooks — shared composables, providers and
-// behavioural components for the user, merchant and admin apps.
+// Public surface of @shopwave/hooks — cross-cutting providers, auth/theme state,
+// behavioural components and utilities shared by the user, merchant and admin
+// apps. Domain data hooks (products, cart, orders, merchant, admin) live in the
+// app that owns them, under that app's `src/hooks`.
 
 export { api, http, getErrorMessage } from './client';
 export { notify } from './notify';
@@ -7,34 +9,12 @@ export { qk } from './queryKeys';
 
 // Providers & behavioural components
 export { AppProviders } from './AppProviders';
-export { AuthProvider, useAuth } from './useAuth';
-export { ThemeProvider, useTheme, themeNoFlashScript, type Theme } from './useTheme';
+export { AuthProvider } from './AuthProvider';
+export { useAuth } from './useAuth';
+export { ThemeProvider } from './ThemeProvider';
+export { useTheme } from './useTheme';
+export { themeNoFlashScript } from './themeNoFlashScript';
+export type { Theme } from './themeContext';
 export { ThemeToggle } from './ThemeToggle';
 export { RoleGuard } from './RoleGuard';
 export { DashboardNavbar } from './DashboardNavbar';
-
-// Data hooks
-export { useProducts, useProduct, useCategories, type ProductFilters } from './useProducts';
-export { useCart, useAddToCart, useUpdateCartItem, useRemoveCartItem } from './useCart';
-export { useOrders, useCheckout } from './useOrders';
-export {
-  useMerchantStats,
-  useMerchantProducts,
-  useMerchantProduct,
-  useMerchantSales,
-  useCreateProduct,
-  useUpdateProduct,
-  useDeleteProduct,
-  type MerchantProductFilters,
-  type ProductPayload,
-} from './useMerchant';
-export {
-  useAdminStats,
-  useAdminUsers,
-  useAdminProducts,
-  useUpdateUserRole,
-  useDeleteUser,
-  useModerateProduct,
-  type AdminUserFilters,
-  type AdminProductFilters,
-} from './useAdmin';

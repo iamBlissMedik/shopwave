@@ -1,21 +1,12 @@
 'use client';
 
-import { createContext, useContext, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import type { User, LoginValues, RegisterValues } from '@shopwave/types';
+import type { LoginValues, RegisterValues } from '@shopwave/types';
 import { api } from './client';
 import { qk } from './queryKeys';
-
-interface AuthContextValue {
-  user: User | null;
-  isLoading: boolean;
-  login: (values: LoginValues) => Promise<User>;
-  register: (values: RegisterValues) => Promise<User>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext, type AuthContextValue } from './authContext';
 
 /**
  * Auth state lives entirely on the server (httpOnly cookie). The client learns
@@ -71,10 +62,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
-  return ctx;
 }

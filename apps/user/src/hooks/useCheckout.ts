@@ -1,17 +1,9 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { api } from './client';
-import { notify } from './notify';
-import { qk } from './queryKeys';
-
-export function useOrders(page = 1) {
-  return useQuery({
-    queryKey: qk.orders(page),
-    queryFn: () => api.orders.list(page),
-  });
-}
+import { notify, qk } from '@shopwave/hooks';
+import { api } from '@/api';
 
 /** Place an order from the current cart, then send the user to their orders. */
 export function useCheckout() {

@@ -1,13 +1,13 @@
 'use client';
 
 import { Users, Store, Package, ShoppingCart, DollarSign } from 'lucide-react';
-import { StatCard, RevenueChart, BarStat, formatPrice, Stagger, RevealItem } from '@shopwave/ui';
-import { useAdminStats } from '@shopwave/hooks';
+import { StatCard, RevenueChart, BarStat, formatPrice, Stagger, RevealItem, LoadingState } from '@shopwave/ui';
+import { useAdminStats } from '@/hooks';
 
 export default function AdminOverview() {
   const { data, isLoading } = useAdminStats();
 
-  if (isLoading || !data) return <p className="py-12 text-center text-muted">Loading dashboard…</p>;
+  if (isLoading || !data) return <LoadingState message="Loading dashboard…" />;
 
   const { totals, usersByRole, revenueByDay } = data;
 

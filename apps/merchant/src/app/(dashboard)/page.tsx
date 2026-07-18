@@ -1,13 +1,13 @@
 'use client';
 
 import { Package, PackageCheck, AlertTriangle, DollarSign, ShoppingBag } from 'lucide-react';
-import { StatCard, RevenueChart, BarStat, formatPrice, Stagger, RevealItem } from '@shopwave/ui';
-import { useMerchantStats } from '@shopwave/hooks';
+import { StatCard, RevenueChart, BarStat, formatPrice, Stagger, RevealItem, LoadingState } from '@shopwave/ui';
+import { useMerchantStats } from '@/hooks';
 
 export default function MerchantOverview() {
   const { data, isLoading } = useMerchantStats();
 
-  if (isLoading || !data) return <p className="py-12 text-center text-muted">Loading dashboard…</p>;
+  if (isLoading || !data) return <LoadingState message="Loading dashboard…" />;
 
   const { totals, revenueByDay, topProducts } = data;
 

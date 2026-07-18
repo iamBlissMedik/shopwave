@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
 import { Badge, Button, DataTable, FilterBar, statusTone, formatPrice, type Column } from '@shopwave/ui';
-import { useAdminProducts, useModerateProduct, type AdminProductFilters } from '@shopwave/hooks';
+import { useAdminProducts, useModerateProduct, type AdminProductFilters } from '@/hooks';
 import type { Product } from '@shopwave/types';
 
 export default function AdminProductsPage() {

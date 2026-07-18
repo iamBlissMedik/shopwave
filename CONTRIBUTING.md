@@ -7,8 +7,10 @@ A few conventions keep this monorepo maintainable as it grows.
 | You're adding… | Put it in… |
 | --- | --- |
 | A reusable, presentational component | `packages/ui` (+ story + test) |
-| A shared React Query hook / provider | `packages/hooks` |
-| A typed API endpoint method | `packages/api-client` (`src/endpoints/*`) |
+| A shared provider / auth or theme hook | `packages/hooks` |
+| An app's domain data hook | that app's `src/hooks` (e.g. `apps/user/src/hooks`) |
+| A shared API endpoint (e.g. `auth`) | `packages/api-client` (`src/endpoints/*`) |
+| An app's domain API endpoint | that app's `src/api` (e.g. `apps/merchant/src/api`) |
 | A shared domain type or form schema | `packages/types` |
 | A design token / Tailwind/tsconfig change | `packages/config` |
 | A customer page | `apps/user/src/app/…` |

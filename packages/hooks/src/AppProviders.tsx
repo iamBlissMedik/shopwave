@@ -4,8 +4,8 @@ import { useState, type ReactNode } from 'react';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './useAuth';
-import { ThemeProvider } from './useTheme';
+import { AuthProvider } from './AuthProvider';
+import { ThemeProvider } from './ThemeProvider';
 import { notify } from './notify';
 
 /**

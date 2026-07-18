@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ShoppingCart, Package, LogOut, Store } from 'lucide-react';
-import { useAuth, useCart, ThemeToggle } from '@shopwave/hooks';
+import { useAuth, ThemeToggle } from '@shopwave/hooks';
+import { useCart } from '@/hooks';
 import { badgePop } from '@shopwave/ui';
 
 /** Storefront navigation — shopping links + auth. */

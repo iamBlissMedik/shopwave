@@ -5,6 +5,7 @@ import { clsx } from 'clsx';
 import type { PaginationMeta } from './types';
 import { Card } from './Card';
 import { Pagination } from './Pagination';
+import { Spinner } from './Spinner';
 
 export interface Column<T> {
   /** Column header label. */
@@ -42,7 +43,12 @@ export function DataTable<T>({
   onPageChange,
 }: DataTableProps<T>) {
   if (isLoading) {
-    return <Card className="p-10 text-center text-sm text-muted">Loading…</Card>;
+    return (
+      <Card className="flex items-center justify-center gap-2 p-10 text-sm text-muted">
+        <Spinner size="sm" />
+        Loading…
+      </Card>
+    );
   }
   if (!rows || rows.length === 0) {
     return <Card className="p-10 text-center text-sm text-muted">{emptyMessage}</Card>;

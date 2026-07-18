@@ -48,16 +48,19 @@ shopwave/
 │   └── admin/                # admin console      (→ admin.app.com  :3002)
 └── packages/
     ├── types/                # DTOs + shared Zod schemas (no React)
-    ├── api-client/           # one axios client + typed endpoint modules
-    ├── hooks/                # React Query hooks, Auth/Theme providers, RoleGuard
+    ├── api-client/           # axios transport + shared auth (apps own their domain endpoints)
+    ├── hooks/                # Auth/Theme providers, RoleGuard, query utils (apps own their data hooks)
     ├── ui/                   # presentational components (+ stories + tests)
     └── config/              # Tailwind preset, base tsconfig, design-token CSS
 ```
 
 - **Backend = feature modules.** Each feature owns `routes → controller →
   service → schema`; business logic lives in services.
-- **Frontend = three apps, one set of packages.** Everything shared lives in
-  `packages/*`. Dependency direction: `apps → hooks → api-client → types`, `apps → ui → types`.
+- **Frontend = three apps + shared packages.** Cross-cutting code (transport,
+  auth/theme, UI, types) lives in `packages/*`; **each app owns its own domain
+  endpoints and data hooks** under `src/api` and `src/hooks`, so the storefront
+  never ships merchant/admin code and vice-versa. Dependency direction:
+  `apps → hooks → api-client → types`, `apps → ui → types`.
 
 ---
 
@@ -157,7 +160,7 @@ List endpoints return `{ data, meta }` with consistent pagination metadata.
   Postgres test DB (`createdb shopwave_test`): auth, catalogue, the checkout
   transaction, access control, marketplace integrity, guest-cart merge, dashboards,
   plus an OpenAPI docs-coverage test.
-- **Component** (`packages/ui`, 52), **hooks** (7), **api-client** (4).
+- **Component** (`packages/ui`, 56), **hooks** (6), **api-client** (4), **user app** (1).
 
 Every `packages/ui` component ships **JSDoc + a story + a test**; every API route
 is in the OpenAPI table (both enforced — see [CONTRIBUTING.md](./CONTRIBUTING.md)).

@@ -1,5 +1,5 @@
 import type { MerchantStats, Paginated, Product, ProductPayload, Sale } from '@shopwave/types';
-import type { Http } from '../client';
+import type { Http } from '@shopwave/api-client';
 
 export type { ProductPayload };
 
