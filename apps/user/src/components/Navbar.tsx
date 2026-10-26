@@ -8,7 +8,7 @@ import { buttonClasses } from '@shopwave/ui';
 
 /** Storefront navigation — shopping links + auth. */
 export function Navbar() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, status } = useAuth();
   const { data: cart } = useCart();
   const itemCount = cart?.itemCount ?? 0;
 
@@ -55,7 +55,8 @@ export function Navbar() {
 
           <ThemeToggle />
 
-          {isLoading ? null : user ? (
+          {/* Nothing while loading or unknown (API unreachable): never a misleading "Login". */}
+          {user ? (
             <>
               <span className="hidden text-muted md:inline">Hi, {user.name.split(' ')[0]}</span>
               <button
@@ -67,7 +68,7 @@ export function Navbar() {
                 <LogOut size={18} aria-hidden /> <span className="hidden sm:inline">Logout</span>
               </button>
             </>
-          ) : (
+          ) : status === 'signed-out' ? (
             <>
               <Link href="/login" className={link}>
                 Login
@@ -76,7 +77,7 @@ export function Navbar() {
                 Sign up
               </Link>
             </>
-          )}
+          ) : null}
         </div>
       </nav>
     </header>

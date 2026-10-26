@@ -12,7 +12,7 @@ import { ThemeToggle } from './ThemeToggle';
  * cart, so it isn't this component.)
  */
 export function DashboardNavbar({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, status } = useAuth();
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
@@ -23,7 +23,8 @@ export function DashboardNavbar({ icon: Icon, label }: { icon: LucideIcon; label
 
         <div className="flex items-center gap-3 text-sm sm:gap-4">
           <ThemeToggle />
-          {isLoading ? null : user ? (
+          {/* Nothing while loading or unknown (API unreachable): never a misleading "Login". */}
+          {user ? (
             <>
               {/* storeName for merchants, falls back to name for admins. */}
               <span className="hidden text-muted md:inline">{user.storeName ?? user.name}</span>
@@ -36,14 +37,14 @@ export function DashboardNavbar({ icon: Icon, label }: { icon: LucideIcon; label
                 <LogOut size={18} aria-hidden /> <span className="hidden sm:inline">Logout</span>
               </button>
             </>
-          ) : (
+          ) : status === 'signed-out' ? (
             <Link
               href="/login"
               className="flex items-center gap-1 text-foreground transition-colors hover:text-brand"
             >
               Login
             </Link>
-          )}
+          ) : null}
         </div>
       </nav>
     </header>

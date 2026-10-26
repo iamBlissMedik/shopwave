@@ -83,8 +83,8 @@ Consumed by:
 - **Body** → **Nunito Sans** (`font-sans`, the default), loaded with
   `next/font/google` as `--font-sans`.
 
-Each app wires both in its root `layout.tsx` and applies the variable classes to
-`<html>`. Headings get Geist automatically (base layer rule); use `font-display`
+Both are wired once, in the shared `AppShell` (`@shopwave/hooks/shell`) that every
+app's root `layout.tsx` renders, which applies the variable classes to `<html>`. Headings get Geist automatically (base layer rule); use `font-display`
 to opt any element into it, `font-sans` for body.
 
 ### Extra utilities (human-feel polish)

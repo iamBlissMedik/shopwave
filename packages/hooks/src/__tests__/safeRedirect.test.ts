@@ -14,6 +14,12 @@ describe('safeRedirect', () => {
     expect(safeRedirect('javascript:alert(1)')).toBe('/');
   });
 
+  it('rejects control characters the URL parser strips into `//host`', () => {
+    expect(safeRedirect('/\t/evil.example')).toBe('/');
+    expect(safeRedirect('/\n/evil.example')).toBe('/');
+    expect(safeRedirect('/\r/evil.example')).toBe('/');
+  });
+
   it('falls back for empty values and the login page itself', () => {
     expect(safeRedirect(null)).toBe('/');
     expect(safeRedirect('')).toBe('/');

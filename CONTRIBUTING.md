@@ -44,7 +44,7 @@ export default async function XPage({ searchParams }: PageProps<'/x'>) {
 }
 ```
 
-Because both sides build the query from the same parser and factory, the keys match and the client starts with the server's data (no refetch, no spinner). Don't wrap error-prone server reads in a bare `try/catch` — let Next's own `notFound()` / `redirect()` / dynamic-rendering signals propagate (see `getServerUser`).
+Because both sides build the query from the same parser and factory, the keys match and the client starts with the server's data (no refetch, no spinner). Don't wrap error-prone server reads in a bare `try/catch` — let Next's own `notFound()` / `redirect()` / dynamic-rendering signals propagate (see `getServerSession`).
 
 ## The component rule (`packages/ui`)
 

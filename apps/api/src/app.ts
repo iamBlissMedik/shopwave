@@ -21,7 +21,8 @@ export function createApp() {
 
   // Trust the first proxy hop for client IPs (rate limiting, logs): the load balancer
   // for browser traffic, or the Next.js server when it renders pages — it calls the
-  // API directly via API_URL and forwards the visitor's X-Forwarded-For.
+  // API directly via API_URL and sends just the visitor's IP in X-Forwarded-For,
+  // resolved from its own trusted hops (TRUSTED_PROXY_HOPS in the frontends).
   app.set('trust proxy', 1);
 
   // --- Security & platform middleware ---

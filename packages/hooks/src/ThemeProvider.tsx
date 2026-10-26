@@ -9,9 +9,14 @@ const DARK_QUERY = '(prefers-color-scheme: dark)';
 const TRANSITION_CLASS = 'theme-transition';
 const TRANSITION_MS = 250;
 
+const THEMES: readonly Theme[] = ['light', 'dark', 'system'];
+
 function readStoredTheme(): Theme {
   try {
-    return (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? 'system';
+    // The key is generic, so anything else on this origin may have written it:
+    // only trust the values we know (an unknown one would crash ThemeToggle).
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return THEMES.includes(stored as Theme) ? (stored as Theme) : 'system';
   } catch {
     return 'system'; // storage blocked (private mode, sandboxed iframe…)
   }
