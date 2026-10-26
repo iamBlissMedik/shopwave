@@ -16,7 +16,6 @@ export default function Error({
 }) {
   useEffect(() => {
     // In production, forward to your monitoring service (Sentry, etc.).
-    // eslint-disable-next-line no-console
     console.error(error);
   }, [error]);
 

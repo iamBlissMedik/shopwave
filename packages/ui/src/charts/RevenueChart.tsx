@@ -1,7 +1,16 @@
 'use client';
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { CHART } from '../chart';
+import { useId } from 'react';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { CHART, chartTooltipStyle } from '../chart';
 import { Card } from '../Card';
 
 export interface TimePoint {
@@ -28,14 +37,17 @@ export function RevenueChart({
   valueFormatter = (v) => String(v),
   axisFormatter = (v) => String(v),
 }: RevenueChartProps) {
+  // Unique per instance so two charts on one page don't share a gradient.
+  const gradientId = `rev-${useId().replace(/:/g, '')}`;
+
   return (
-    <Card className="p-4">
+    <Card className="animate-fade-in p-4">
       <h3 className="mb-4 text-sm font-semibold text-foreground">{title}</h3>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 5, right: 8, left: -8, bottom: 0 }}>
             <defs>
-              <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={CHART.brand} stopOpacity={0.35} />
                 <stop offset="95%" stopColor={CHART.brand} stopOpacity={0} />
               </linearGradient>
@@ -57,10 +69,18 @@ export function RevenueChart({
               width={48}
             />
             <Tooltip
-              formatter={(v: number) => [valueFormatter(v), 'Revenue']}
-              contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12, color: '#0f172a' }}
+              formatter={(v) => [valueFormatter(Number(v)), 'Revenue']}
+              contentStyle={chartTooltipStyle}
             />
-            <Area type="monotone" dataKey="value" stroke={CHART.brand} strokeWidth={2} fill="url(#rev)" />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke={CHART.brand}
+              strokeWidth={2}
+              fill={`url(#${gradientId})`}
+              animationDuration={800}
+              animationEasing="ease-out"
+            />
           </AreaChart>
         </ResponsiveContainer>
       </div>

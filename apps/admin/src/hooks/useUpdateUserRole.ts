@@ -1,5 +1,3 @@
-'use client';
-
 import { useMutation } from '@tanstack/react-query';
 import type { Role } from '@shopwave/types';
 import { notify } from '@shopwave/hooks';

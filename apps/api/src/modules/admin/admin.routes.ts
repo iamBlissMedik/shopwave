@@ -20,10 +20,22 @@ router.use(adminLimiter, authenticate, authorize('ADMIN'));
 router.get('/stats', asyncHandler(adminController.stats));
 
 router.get('/users', validate(listUsersSchema), asyncHandler(adminController.listUsers));
-router.patch('/users/:id/role', validate(updateUserRoleSchema), asyncHandler(adminController.updateUserRole));
+router.patch(
+  '/users/:id/role',
+  validate(updateUserRoleSchema),
+  asyncHandler(adminController.updateUserRole),
+);
 router.delete('/users/:id', validate(userIdSchema), asyncHandler(adminController.deleteUser));
 
-router.get('/products', validate(listAllProductsSchema), asyncHandler(adminController.listProducts));
-router.patch('/products/:id', validate(updateProductSchema), asyncHandler(adminController.updateProduct));
+router.get(
+  '/products',
+  validate(listAllProductsSchema),
+  asyncHandler(adminController.listProducts),
+);
+router.patch(
+  '/products/:id',
+  validate(updateProductSchema),
+  asyncHandler(adminController.updateProduct),
+);
 
 export default router;

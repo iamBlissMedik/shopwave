@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from './useTheme';
 import type { Theme } from './themeContext';
@@ -19,27 +18,17 @@ export function ThemeToggle() {
   const Icon = icons[theme];
 
   return (
-    <motion.button
+    <button
+      type="button"
       onClick={toggle}
-      whileTap={{ scale: 0.9 }}
       aria-label={`Theme: ${theme}. Click to switch to ${next[theme]}.`}
       title={`Theme: ${theme}`}
-      className="rounded-md p-2 text-foreground hover:bg-surface-muted"
+      className="rounded-lg p-2 text-foreground transition-[background-color,transform] duration-150 ease-out hover:bg-surface-muted active:scale-90"
     >
-      {/* Crossfade + spin the icon as the theme cycles. `mode="wait"` lets the
-          outgoing icon finish before the new one animates in. */}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={theme}
-          initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-          animate={{ rotate: 0, opacity: 1, scale: 1 }}
-          exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-          transition={{ duration: 0.2 }}
-          className="block"
-        >
-          <Icon size={18} />
-        </motion.span>
-      </AnimatePresence>
-    </motion.button>
+      {/* Re-keyed per theme, so the CSS `spin-in` entrance replays on every switch. */}
+      <span key={theme} className="block animate-spin-in">
+        <Icon size={18} aria-hidden />
+      </span>
+    </button>
   );
 }

@@ -11,12 +11,13 @@ export const logger = pino({
   // Silent under test to keep the suite output clean.
   level: isTest ? 'silent' : isProd ? 'info' : 'debug',
   // Pretty transport only in dev — JSON in prod.
-  transport: isProd || isTest
-    ? undefined
-    : {
-        target: 'pino-pretty',
-        options: { colorize: true, translateTime: 'SYS:HH:MM:ss', ignore: 'pid,hostname' },
-      },
+  transport:
+    isProd || isTest
+      ? undefined
+      : {
+          target: 'pino-pretty',
+          options: { colorize: true, translateTime: 'SYS:HH:MM:ss', ignore: 'pid,hostname' },
+        },
   // Never log secrets that may sneak into request bodies/headers.
   redact: {
     paths: ['req.headers.authorization', 'req.headers.cookie', '*.password', '*.token'],

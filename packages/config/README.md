@@ -95,3 +95,24 @@ to opt any element into it, `font-sans` for body.
 | `shadow-card` | Slightly stronger hover/elevated state. |
 | `rounded-lg/xl/2xl` | Softened corner scale (less boxy). |
 | `ring-brand` | Brand-colored focus ring (used by `Button`). |
+
+### Motion
+
+Entrances are CSS keyframes, so they run on server-rendered HTML before any
+JavaScript loads, and they animate only `opacity` / `transform` (compositor-only,
+smooth even on low-end devices).
+
+| Utility | Use |
+| --- | --- |
+| `animate-page-in` | Route entrance (each app's `template.tsx`), 250ms |
+| `animate-fade-in-up` | List/grid items (`Stagger` adds a per-item delay), 400ms |
+| `animate-fade-in` | Lazily-loaded content settling over its skeleton (charts) |
+| `animate-fade-in-delayed` | Loading states — invisible for the first 150ms so fast loads never flash |
+| `animate-pop-in` | Badges (springy overshoot) |
+| `animate-spin-in` | Icon swaps (theme toggle) |
+| `ease-out-expo`, `ease-spring` | The shared easing curves for hand-written transitions |
+
+`globals.css` also cross-fades all colours while the theme switches (the
+`theme-transition` class, ~250ms), enables smooth in-page scrolling, and honours
+the OS **reduce motion** setting by switching every animation and transition off
+(spinners excepted).

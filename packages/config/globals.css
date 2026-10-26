@@ -110,9 +110,36 @@
     background-color: rgb(var(--color-brand) / 0.18);
   }
 
-  /* Smooth the flip between themes (but not on first paint). */
-  body,
-  .themed {
-    @apply transition-colors duration-200;
+  /* Smooth in-page scrolling (e.g. back to top on pagination). Next keeps route
+     changes instant because the root <html> sets data-scroll-behavior="smooth". */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Theme switch: cross-fade every surface together, only while the class is on
+     <html> (ThemeProvider adds it for ~250ms), so hovers stay instant. */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition:
+      background-color 0.2s ease-out,
+      border-color 0.2s ease-out,
+      color 0.2s ease-out,
+      fill 0.2s ease-out !important;
+  }
+
+  /* Respect the OS "reduce motion" setting for every CSS animation/transition.
+     Spinners are exempt: they convey state, not decoration. */
+  @media (prefers-reduced-motion: reduce) {
+    *:not(.animate-spin),
+    *:not(.animate-spin)::before,
+    *:not(.animate-spin)::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

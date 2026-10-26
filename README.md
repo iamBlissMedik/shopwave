@@ -1,7 +1,7 @@
 # 🛍️ Shopwave — Multi-Vendor Marketplace
 
 A full-stack, role-based marketplace built as a Turborepo monorepo: three
-role-scoped **Next.js 14** apps, an **Express + Prisma + PostgreSQL** API, and a
+role-scoped **Next.js 16** (React 19) apps, an **Express + Prisma + PostgreSQL** API, and a
 set of shared packages (UI, hooks, API client, types, design tokens).
 
 - 🛒 **Customer** — browse every store, cart & checkout, view orders
@@ -20,10 +20,11 @@ set of shared packages (UI, hooks, API client, types, design tokens).
 | Layer | Choice |
 | --- | --- |
 | Monorepo | Turborepo + pnpm workspaces |
-| Frontend | Next.js 14 (App Router) × 3 apps |
+| Frontend | Next.js 16 (App Router, Turbopack) + React 19 × 3 apps — server-rendered |
 | Styling | Tailwind CSS + CSS-variable design tokens (light/dark) |
-| Server state | TanStack Query · Forms: React Hook Form + Zod · Motion: Framer Motion |
-| HTTP | Axios (httpOnly cookie auth) · Charts: Recharts |
+| Server state | TanStack Query (SSR-prefetched + hydrated) · Forms: React Hook Form + Zod |
+| Motion | CSS keyframes (SSR-safe, reduced-motion aware) · Framer Motion only for the cart's exit/layout animation |
+| HTTP | One `fetch` transport for browser + server (httpOnly cookie auth) · Charts: Recharts (lazy-loaded) |
 | Backend | Express, built with tsup (esbuild) |
 | ORM / DB | Prisma / PostgreSQL |
 | Auth | JWT in httpOnly cookie + bcrypt, role-based |
@@ -48,8 +49,8 @@ shopwave/
 │   └── admin/                # admin console      (→ admin.app.com  :3002)
 └── packages/
     ├── types/                # DTOs + shared Zod schemas (no React)
-    ├── api-client/           # axios transport + shared auth (apps own their domain endpoints)
-    ├── hooks/                # Auth/Theme providers, RoleGuard, query utils (apps own their data hooks)
+    ├── api-client/           # fetch transport (browser + server) + shared auth (apps own their domain endpoints)
+    ├── hooks/                # providers, LoginForm, server session/SSR helpers, URL state, query keys
     ├── ui/                   # presentational components (+ stories + tests)
     └── config/              # Tailwind preset, base tsconfig, design-token CSS
 ```
@@ -60,7 +61,35 @@ shopwave/
   auth/theme, UI, types) lives in `packages/*`; **each app owns its own domain
   endpoints and data hooks** under `src/api` and `src/hooks`, so the storefront
   never ships merchant/admin code and vice-versa. Dependency direction:
-  `apps → hooks → api-client → types`, `apps → ui → types`.
+  `apps → hooks → (ui, api-client) → types`, `apps → ui → types`.
+
+---
+
+## Rendering, data & motion
+
+- **Server-rendered first paint.** Every `page.tsx` is a Server Component. It
+  prefetches its data with the visitor's cookies (`@shopwave/hooks/server`) into
+  a per-request React Query client and hands it to the page's client view via
+  `HydrationBoundary` — so the HTML arrives complete (no loading spinners, fully
+  crawlable) and the browser continues with the same cache, mutations and
+  invalidation. Each app's `src/queries.ts` holds the URL parsers and
+  `queryOptions` both sides share, which is what makes the query keys match.
+- **URL-driven lists.** Filters and pagination live in the URL (`?category=…&page=2`):
+  shareable, server-rendered, and restored by Back. Changes go through
+  `history.pushState`/`replaceState` (`useUrlFilters`), so they don't round-trip
+  the server.
+- **Auth on the server.** The root layout resolves the session once per request
+  (so the navbar is right in the first HTML), dashboards verify the role in their
+  layout before rendering anything, and `proxy.ts` gives cookie-less visitors a
+  fast redirect that keeps the deep link. The API still authorizes every request.
+- **SEO.** Per-page titles, product `generateMetadata` (description, canonical,
+  Open Graph image), real `404`s, `sitemap.xml` and `robots.txt` on the
+  storefront; dashboards are `noindex`.
+- **Motion.** Page, list, badge and icon entrances are CSS keyframes animating only
+  `opacity`/`transform` (compositor-friendly), so they play on the server-rendered
+  HTML without waiting for JavaScript and are switched off by the OS
+  "reduce motion" setting. Loading states fade in only after ~150 ms, so fast
+  loads never flash a spinner. Charts load lazily behind same-size skeletons.
 
 ---
 
@@ -106,11 +135,15 @@ pnpm dev                # api :4000 + user :3000 + merchant :3001 + admin :3002
 > **Production subdomains:** each app deploys independently to
 > `user|merchant|admin.app.com`, all pointing at one API (`api.app.com`). Set the
 > API's `CORS_ORIGINS` to those origins and `COOKIE_DOMAIN=.app.com` so the
-> session is shared across subdomains.
+> session is shared across subdomains (the apps' servers read it to render
+> signed-in pages). Set each app's `API_URL` to the API's internal address so
+> server rendering skips the public load balancer, and the storefront's
+> `SITE_URL` to its public origin (canonical URLs, Open Graph, sitemap).
 
 ### Scripts
 ```bash
-pnpm dev | build | lint | typecheck | test     # turbo across workspaces
+pnpm dev | build | lint | typecheck | test     # turbo across workspaces (lint = ESLint per app)
+pnpm format                                   # prettier
 pnpm db:migrate | db:seed | db:studio
 pnpm storybook
 ```
@@ -154,13 +187,14 @@ List endpoints return `{ data, meta }` with consistent pagination metadata.
 
 ## Testing, docs & Storybook
 
-**104 automated tests** across 4 workspaces (`pnpm test`):
+**135 automated tests** across 5 workspaces (`pnpm test`):
 
 - **API integration** (`apps/api`, 41) — Vitest + Supertest against an isolated
   Postgres test DB (`createdb shopwave_test`): auth, catalogue, the checkout
   transaction, access control, marketplace integrity, guest-cart merge, dashboards,
   plus an OpenAPI docs-coverage test.
-- **Component** (`packages/ui`, 56), **hooks** (6), **api-client** (4), **user app** (1).
+- **Component** (`packages/ui`, 63), **hooks** (19 — query keys, URL state, redirect safety…),
+  **api-client** (8 — the fetch transport), **user app** (4 — URL parsing, data hook).
 
 Every `packages/ui` component ships **JSDoc + a story + a test**; every API route
 is in the OpenAPI table (both enforced — see [CONTRIBUTING.md](./CONTRIBUTING.md)).

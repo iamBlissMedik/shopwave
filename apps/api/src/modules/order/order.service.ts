@@ -77,7 +77,11 @@ export async function checkout(userId: string, idempotencyKey?: string) {
   } catch (err) {
     // Concurrent double-submit with the same key: the loser hits the unique
     // constraint. Return the winner's order — but only if it's the same user.
-    if (idempotencyKey && err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+    if (
+      idempotencyKey &&
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === 'P2002'
+    ) {
       const existing = await prisma.order.findUnique({
         where: { idempotencyKey },
         include: ORDER_INCLUDE,

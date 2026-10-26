@@ -1,5 +1,3 @@
-'use client';
-
 import { useQuery } from '@tanstack/react-query';
 import { qk, useAuth } from '@shopwave/hooks';
 import { api } from '@/api';

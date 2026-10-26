@@ -8,7 +8,17 @@ const meta: Meta<typeof Badge> = {
   argTypes: {
     tone: {
       control: 'select',
-      options: ['neutral', 'brand', 'success', 'warning', 'danger', 'teal', 'pink', 'amber', 'lime'],
+      options: [
+        'neutral',
+        'brand',
+        'success',
+        'warning',
+        'danger',
+        'teal',
+        'pink',
+        'amber',
+        'lime',
+      ],
     },
   },
 };

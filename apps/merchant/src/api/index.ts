@@ -1,9 +1,9 @@
-// The merchant dashboard's own API surface. Built on the shared transport
-// (`http`) from @shopwave/hooks; the merchant endpoint definitions live here so
-// only this app ships them.
+// The merchant dashboard's browser API client: this app's own endpoints on the
+// shared transport (`http`) from @shopwave/hooks.
 import { http } from '@shopwave/hooks';
-import { merchantEndpoints, type MerchantProductFilters, type ProductPayload } from './merchant';
+import { createApi } from './create';
 
-export const api = { merchant: merchantEndpoints(http) };
+export const api = createApi(http);
 
-export type { MerchantProductFilters, ProductPayload };
+export type { Api } from './create';
+export type { MerchantProductFilters, ProductPayload } from './merchant';

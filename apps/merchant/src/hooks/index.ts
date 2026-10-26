@@ -5,5 +5,4 @@ export { useMerchantProduct } from './useMerchantProduct';
 export { useMerchantSales } from './useMerchantSales';
 export { useCreateProduct } from './useCreateProduct';
 export { useUpdateProduct } from './useUpdateProduct';
-export { useDeleteProduct } from './useDeleteProduct';
 export type { MerchantProductFilters, ProductPayload } from '@/api';

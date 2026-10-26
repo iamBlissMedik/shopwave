@@ -1,5 +1,3 @@
-'use client';
-
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { notify } from '@shopwave/hooks';

@@ -6,11 +6,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./charts": "./src/charts/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",
@@ -18,38 +18,38 @@
   },
   "dependencies": {
     "@shopwave/types": "workspace:*",
-    "@hookform/resolvers": "^3.9.0",
+    "@hookform/resolvers": "^3.10.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.445.0",
-    "react-hook-form": "^7.53.0",
-    "recharts": "^2.12.7"
+    "lucide-react": "^0.577.0",
+    "react-hook-form": "^7.91.0",
+    "recharts": "^3.10.1",
+    "react-is": "^19.3.1"
   },
   "peerDependencies": {
-    "framer-motion": "^12.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@shopwave/config": "workspace:*",
-    "@storybook/addon-essentials": "^8.3.5",
-    "@storybook/blocks": "^8.3.5",
-    "@storybook/react": "^8.3.5",
-    "@storybook/react-vite": "^8.3.5",
-    "@testing-library/jest-dom": "^6.5.0",
-    "@testing-library/react": "^16.0.1",
+    "@storybook/addon-essentials": "^8.6.19",
+    "@storybook/blocks": "^8.6.19",
+    "@storybook/react": "^8.6.19",
+    "@storybook/react-vite": "^8.6.19",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.5.2",
-    "@types/react": "^18.3.8",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.20",
-    "framer-motion": "^12.40.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "storybook": "^8.3.5",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
-  }
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "storybook": "^8.6.19",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  },
+  "sideEffects": false
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { app, agent, registerAgent, resetDb } from './helpers';
+import { agent, registerAgent, resetDb } from './helpers';
 
 describe('Auth', () => {
   beforeEach(resetDb);
@@ -24,17 +24,24 @@ describe('Auth', () => {
   });
 
   it('rejects a merchant without a store name', async () => {
-    const res = await agent()
-      .post('/api/auth/register')
-      .send({ name: 'No Store', email: 'nostore@example.com', password: 'Password1!', role: 'MERCHANT' });
+    const res = await agent().post('/api/auth/register').send({
+      name: 'No Store',
+      email: 'nostore@example.com',
+      password: 'Password1!',
+      role: 'MERCHANT',
+    });
     expect(res.status).toBe(400);
   });
 
   it('uses an identical error for unknown email and wrong password (no enumeration)', async () => {
     await registerAgent('USER', { email: 'known@example.com' });
 
-    const wrongPass = await agent().post('/api/auth/login').send({ email: 'known@example.com', password: 'nope' });
-    const unknown = await agent().post('/api/auth/login').send({ email: 'ghost@example.com', password: 'nope' });
+    const wrongPass = await agent()
+      .post('/api/auth/login')
+      .send({ email: 'known@example.com', password: 'nope' });
+    const unknown = await agent()
+      .post('/api/auth/login')
+      .send({ email: 'ghost@example.com', password: 'nope' });
 
     expect(wrongPass.status).toBe(401);
     expect(unknown.status).toBe(401);

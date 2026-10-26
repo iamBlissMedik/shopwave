@@ -1,4 +1,4 @@
-import { createApiClient, createHttp, getErrorMessage, authEndpoints } from '@shopwave/api-client';
+import { authEndpoints, createHttp, getErrorMessage } from '@shopwave/api-client';
 
 /**
  * The configured transport every app shares.
@@ -13,7 +13,7 @@ import { createApiClient, createHttp, getErrorMessage, authEndpoints } from '@sh
  */
 const baseURL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api';
 
-export const http = createHttp(createApiClient({ baseURL }));
+export const http = createHttp({ baseURL, credentials: 'include' });
 export const api = { auth: authEndpoints(http) };
 
 export { getErrorMessage };

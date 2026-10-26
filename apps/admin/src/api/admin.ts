@@ -24,7 +24,7 @@ export function adminEndpoints(http: Http) {
       http.get<Paginated<Product>>('/admin/products', filters),
     updateUserRole: (id: string, role: Role) =>
       http.patch<{ user: AdminUser }>(`/admin/users/${id}/role`, { role }),
-    deleteUser: (id: string) => http.delete<{ message: string }>(`/admin/users/${id}`),
+    deleteUser: (id: string) => http.delete<{ id: string; deleted: true }>(`/admin/users/${id}`),
     moderateProduct: (id: string, isActive: boolean) =>
       http.patch<{ product: Product }>(`/admin/products/${id}`, { isActive }),
   };

@@ -19,7 +19,9 @@ import apiRoutes from './routes';
 export function createApp() {
   const app = express();
 
-  // Trust the first proxy (needed for correct client IPs behind nginx/Render/etc.)
+  // Trust the first proxy hop for client IPs (rate limiting, logs): the load balancer
+  // for browser traffic, or the Next.js server when it renders pages — it calls the
+  // API directly via API_URL and forwards the visitor's X-Forwarded-For.
   app.set('trust proxy', 1);
 
   // --- Security & platform middleware ---

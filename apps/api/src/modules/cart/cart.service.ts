@@ -14,7 +14,10 @@ function ownerWhere(owner: CartOwner): Prisma.CartWhereUniqueInput {
 }
 
 /** Ensure the owner has a cart row and return its id. */
-async function getOrCreateCartId(owner: CartOwner, tx: Prisma.TransactionClient = prisma): Promise<string> {
+async function getOrCreateCartId(
+  owner: CartOwner,
+  tx: Prisma.TransactionClient = prisma,
+): Promise<string> {
   const cart = await tx.cart.upsert({
     where: ownerWhere(owner),
     update: {},
@@ -105,11 +108,9 @@ export async function updateItem(owner: CartOwner, productId: string, quantity: 
 
 export async function removeItem(owner: CartOwner, productId: string) {
   const cartId = await getOrCreateCartId(owner);
-  await prisma.cartItem
-    .delete({ where: { cartId_productId: { cartId, productId } } })
-    .catch(() => {
-      throw ApiError.notFound('Item is not in your cart');
-    });
+  await prisma.cartItem.delete({ where: { cartId_productId: { cartId, productId } } }).catch(() => {
+    throw ApiError.notFound('Item is not in your cart');
+  });
   return getCart(owner);
 }
 

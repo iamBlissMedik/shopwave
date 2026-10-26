@@ -1,5 +1,3 @@
-'use client';
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Cart } from '@shopwave/types';
 import { notify, qk } from '@shopwave/hooks';

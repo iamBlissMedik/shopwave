@@ -1,17 +1,16 @@
 'use client';
 
 import { clsx } from 'clsx';
-import type { ComponentType, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { DefaultLink } from './adapters';
+import type { LinkLike } from './types';
 
 export interface DashboardNavItem {
   href: string;
   label: string;
   icon: LucideIcon;
 }
-
-/** Minimal shape of a link component (e.g. Next's `Link`). */
-type LinkLike = ComponentType<{ href: string; className?: string; children: ReactNode }>;
 
 /**
  * Shared dashboard layout: a sidebar on desktop, a scrollable tab strip on
@@ -26,7 +25,7 @@ export function DashboardShell({
   title,
   nav,
   pathname,
-  LinkComponent,
+  LinkComponent: Link = DefaultLink,
   children,
 }: {
   title: string;
@@ -35,12 +34,6 @@ export function DashboardShell({
   LinkComponent?: LinkLike;
   children: ReactNode;
 }) {
-  const Link: LinkLike = LinkComponent ?? (({ href, className, children }) => (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  ));
-
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
@@ -58,13 +51,13 @@ export function DashboardShell({
                 key={item.href}
                 href={item.href}
                 className={clsx(
-                  'flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive(item.href)
                     ? 'bg-brand/10 text-brand'
                     : 'text-muted hover:bg-surface-muted hover:text-foreground',
                 )}
               >
-                <Icon size={16} /> {item.label}
+                <Icon size={16} aria-hidden /> {item.label}
               </Link>
             );
           })}

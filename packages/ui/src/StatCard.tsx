@@ -18,8 +18,8 @@ export function StatCard({ label, value, icon: Icon, hint }: StatCardProps) {
           <p className="mt-1 text-2xl font-bold text-foreground">{value}</p>
           {hint && <p className="mt-0.5 text-xs text-muted">{hint}</p>}
         </div>
-        <span className="rounded-md bg-brand/10 p-2 text-brand">
-          <Icon size={20} />
+        <span className="rounded-lg bg-brand/10 p-2 text-brand">
+          <Icon size={20} aria-hidden />
         </span>
       </div>
     </Card>

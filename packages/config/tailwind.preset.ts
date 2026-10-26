@@ -72,6 +72,44 @@ const preset: Partial<Config> = {
       ringColor: {
         DEFAULT: token('--color-brand'),
       },
+      // Motion system. Every entrance animates only `opacity` + `transform`, so it
+      // runs on the compositor (no layout / paint work → smooth on low-end
+      // devices) and works in server-rendered HTML before any JS loads.
+      // `prefers-reduced-motion` is honoured globally in globals.css.
+      transitionTimingFunction: {
+        'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)', // slight overshoot
+      },
+      keyframes: {
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'none' },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'pop-in': {
+          from: { opacity: '0', transform: 'scale(0.5)' },
+          to: { opacity: '1', transform: 'none' },
+        },
+        'spin-in': {
+          from: { opacity: '0', transform: 'rotate(-90deg) scale(0.6)' },
+          to: { opacity: '1', transform: 'none' },
+        },
+      },
+      animation: {
+        // Route entrance (template.tsx) — short so it never delays content.
+        'page-in': 'fade-in-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) both',
+        // List / grid items (Stagger) — delay set per item.
+        'fade-in-up': 'fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both',
+        // Lazily-loaded content (charts) settling in over its skeleton.
+        'fade-in': 'fade-in 0.3s ease-out both',
+        // Loading states fade in after a beat, so fast loads never flash a spinner.
+        'fade-in-delayed': 'fade-in 0.2s ease-out 0.15s both',
+        'pop-in': 'pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+        'spin-in': 'spin-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both',
+      },
     },
   },
   plugins: [],

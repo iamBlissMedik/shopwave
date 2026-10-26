@@ -19,7 +19,8 @@ export const Default: Story = {
       <div className="max-w-sm space-y-2">
         <SearchInput value={committed} onSearch={setCommitted} />
         <p className="text-xs text-muted">
-          Committed after debounce: <span className="font-medium text-foreground">{committed || '—'}</span>
+          Committed after debounce:{' '}
+          <span className="font-medium text-foreground">{committed || '—'}</span>
         </p>
       </div>
     );

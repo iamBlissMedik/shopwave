@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { Card } from './Card';
 import { SearchInput } from './SearchInput';
 
 export interface FilterBarProps {
@@ -17,11 +18,11 @@ export interface FilterBarProps {
  */
 export function FilterBar({ search, onSearch, searchPlaceholder, children }: FilterBarProps) {
   return (
-    <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border bg-surface p-3 sm:flex-row sm:items-center">
+    <Card className="mb-4 flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
       <div className="sm:max-w-xs sm:flex-1">
         <SearchInput value={search} onSearch={onSearch} placeholder={searchPlaceholder} />
       </div>
       {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
-    </div>
+    </Card>
   );
 }

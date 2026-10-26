@@ -13,7 +13,9 @@ export const Default: Story = {
   render: () => (
     <Card className="max-w-sm p-6">
       <h3 className="font-semibold text-foreground">Card title</h3>
-      <p className="mt-1 text-sm text-muted">A surface container used across pages and dashboards.</p>
+      <p className="mt-1 text-sm text-muted">
+        A surface container used across pages and dashboards.
+      </p>
     </Card>
   ),
 };

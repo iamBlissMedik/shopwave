@@ -1,29 +1,31 @@
-'use client';
+import { Children, type HTMLAttributes } from 'react';
 
-import { motion, type HTMLMotionProps } from 'framer-motion';
-import { staggerContainer, fadeInUp } from './motion';
+/** Delay between consecutive items, and the cap so long lists don't drag. */
+const STEP_MS = 40;
+const MAX_STEPS = 10;
 
 /**
- * Orchestration wrapper: mounts its children with a staggered fade-rise. Drop it
- * around a grid or list and wrap each child in `<RevealItem>`. Timing and easing
- * come from the shared `staggerContainer` / `fadeInUp` variants, so every app
- * cascades identically. Reduced-motion is honored globally via `<MotionConfig>`,
- * so there's nothing to guard for here. Accepts all `motion.div` props, so pass
- * the grid/list `className` straight through — the Stagger *is* the container.
+ * Staggered entrance for a grid or list: each child fades and rises in, one
+ * after another. Pure CSS (the `animate-fade-in-up` keyframe + a per-item
+ * delay), so it needs no client JavaScript, plays on server-rendered HTML the
+ * moment it paints, and honours "reduce motion" via globals.css.
+ *
+ * The `Stagger` *is* the container — pass the grid/list `className` straight
+ * through. Each child is wrapped in an animated cell that stretches its content
+ * to full height, so cards in a row stay equal height. Re-key the `Stagger`
+ * (e.g. on a filter change) to replay the cascade.
  */
-export function Stagger({ children, ...props }: HTMLMotionProps<'div'>) {
+export function Stagger({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <motion.div variants={staggerContainer} initial="hidden" animate="show" {...props}>
-      {children}
-    </motion.div>
-  );
-}
-
-/** A single fade-rise child of `<Stagger>` (or any `staggerContainer` parent). */
-export function RevealItem({ children, ...props }: HTMLMotionProps<'div'>) {
-  return (
-    <motion.div variants={fadeInUp} {...props}>
-      {children}
-    </motion.div>
+    <div className={className} {...props}>
+      {Children.map(children, (child, i) => (
+        <div
+          className="animate-fade-in-up [&>*]:h-full"
+          style={{ animationDelay: `${Math.min(i, MAX_STEPS) * STEP_MS}ms` }}
+        >
+          {child}
+        </div>
+      ))}
+    </div>
   );
 }

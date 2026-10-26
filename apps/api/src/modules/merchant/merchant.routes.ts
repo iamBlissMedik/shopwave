@@ -21,8 +21,20 @@ router.get('/sales', validate(listSalesSchema), asyncHandler(merchantController.
 
 router.get('/products', validate(listMineSchema), asyncHandler(merchantController.listProducts));
 router.get('/products/:id', validate(productIdSchema), asyncHandler(merchantController.getProduct));
-router.post('/products', validate(createProductSchema), asyncHandler(merchantController.createProduct));
-router.patch('/products/:id', validate(updateProductSchema), asyncHandler(merchantController.updateProduct));
-router.delete('/products/:id', validate(productIdSchema), asyncHandler(merchantController.deleteProduct));
+router.post(
+  '/products',
+  validate(createProductSchema),
+  asyncHandler(merchantController.createProduct),
+);
+router.patch(
+  '/products/:id',
+  validate(updateProductSchema),
+  asyncHandler(merchantController.updateProduct),
+);
+router.delete(
+  '/products/:id',
+  validate(productIdSchema),
+  asyncHandler(merchantController.deleteProduct),
+);
 
 export default router;
