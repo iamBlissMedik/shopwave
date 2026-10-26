@@ -2,45 +2,48 @@
   "name": "@shopwave/hooks",
   "version": "1.0.0",
   "private": true,
-  "description": "Shared auth/theme providers, behavioural components and query utilities used by all apps (domain data hooks live in each app)",
+  "description": "Shared auth/theme providers, server helpers (session, SSR transport), URL state and query utilities used by all apps (domain data hooks live in each app)",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./middleware": "./src/authMiddleware.ts"
+    "./proxy": "./src/authProxy.ts",
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
     "@shopwave/api-client": "workspace:*",
     "@shopwave/types": "workspace:*",
-    "lucide-react": "^0.445.0",
-    "react-hot-toast": "^2.4.1"
+    "@shopwave/ui": "workspace:*",
+    "@hookform/resolvers": "^3.10.0",
+    "lucide-react": "^0.577.0",
+    "react-hook-form": "^7.91.0",
+    "react-hot-toast": "^2.6.1",
+    "server-only": "^0.0.1"
   },
   "peerDependencies": {
-    "@tanstack/react-query": "^5.56.2",
-    "framer-motion": "^12.0.0",
-    "next": "^14.2.13",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@tanstack/react-query": "^5.104.5",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@shopwave/config": "workspace:*",
-    "@tanstack/react-query": "^5.56.2",
-    "@testing-library/jest-dom": "^6.5.0",
-    "@testing-library/react": "^16.0.1",
-    "@types/react": "^18.3.8",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "framer-motion": "^12.40.0",
+    "@tanstack/react-query": "^5.104.5",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "jsdom": "^25.0.1",
-    "next": "14.2.13",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
-  }
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  },
+  "sideEffects": false
 }

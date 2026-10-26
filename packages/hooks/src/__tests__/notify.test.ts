@@ -7,9 +7,6 @@ const toast = vi.hoisted(() =>
   Object.assign(vi.fn(), {
     success: vi.fn(),
     error: vi.fn(),
-    loading: vi.fn(),
-    dismiss: vi.fn(),
-    promise: vi.fn(),
   }),
 );
 vi.mock('react-hot-toast', () => ({ default: toast }));

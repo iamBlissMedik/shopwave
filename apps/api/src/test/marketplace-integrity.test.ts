@@ -17,14 +17,16 @@ describe('Marketplace integrity', () => {
       const { agent: user } = await registerAgent('USER');
 
       // Buy 2 @ 2000 → order total 4000.
-      await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 });
+      await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 }).expect(200);
       const checkout = await user.post('/api/orders/checkout');
       const orderId = checkout.body.order.id as string;
       expect(checkout.body.order.total).toBe(4000);
       expect(checkout.body.order.items[0].price).toBe(2000);
 
       // Merchant later raises the price dramatically.
-      const bump = await merchant.patch(`/api/merchant/products/${product.id}`).send({ price: 9999 });
+      const bump = await merchant
+        .patch(`/api/merchant/products/${product.id}`)
+        .send({ price: 9999 });
       expect(bump.status).toBe(200);
       expect(bump.body.product.price).toBe(9999);
 
@@ -43,7 +45,9 @@ describe('Marketplace integrity', () => {
 
       const { agent: bob } = await registerAgent('MERCHANT');
       expect((await bob.get(`/api/merchant/products/${product.id}`)).status).toBe(403);
-      expect((await bob.patch(`/api/merchant/products/${product.id}`).send({ price: 1 })).status).toBe(403);
+      expect(
+        (await bob.patch(`/api/merchant/products/${product.id}`).send({ price: 1 })).status,
+      ).toBe(403);
       expect((await bob.delete(`/api/merchant/products/${product.id}`)).status).toBe(403);
 
       // Alice's product is untouched by Bob's attempts.
@@ -63,7 +67,9 @@ describe('Marketplace integrity', () => {
 
       // Admin promotes them to MERCHANT.
       const { agent: admin } = await adminAgent();
-      const promote = await admin.patch(`/api/admin/users/${userId}/role`).send({ role: 'MERCHANT' });
+      const promote = await admin
+        .patch(`/api/admin/users/${userId}/role`)
+        .send({ role: 'MERCHANT' });
       expect(promote.status).toBe(200);
 
       // The role lives in the JWT, so the *existing* session still reads as USER

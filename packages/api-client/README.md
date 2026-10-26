@@ -1,28 +1,27 @@
 # @shopwave/api-client
 
-The platform's **transport layer**. Framework-agnostic (no React) — used by `@shopwave/hooks` and every app. Centralizing it means the auth cookie, error envelope, timeouts and (future) token refresh live in one place that every app shares.
+The platform's **transport layer**. Framework-agnostic (no React) and built on the platform `fetch`, so the **same code runs in the browser and in Server Components** — no HTTP library is shipped to the client. Centralizing it means the auth cookie, error envelope and timeouts live in one place every app shares.
 
-It is deliberately thin: it owns the client factory and typed `http` helpers, plus the one endpoint group common to every app — **`auth`**. Each app builds and owns its own domain endpoints (`products`, `cart`, `orders`, `merchant`, `admin`) on top of this transport, under that app's `src/api`. The storefront never ships merchant/admin code, and vice-versa.
+It is deliberately thin: it owns the `Http` transport plus the one endpoint group common to every app — **`auth`**. Each app builds and owns its own domain endpoints (`products`, `cart`, `orders`, `merchant`, `admin`) on top of this transport, under that app's `src/api`. The storefront never ships merchant/admin code, and vice-versa.
 
 ```ts
-import { createApiClient, createHttp, authEndpoints, type Http } from '@shopwave/api-client';
+import { createHttp, authEndpoints, type Http } from '@shopwave/api-client';
 
-const http = createHttp(createApiClient({ baseURL: 'https://api.app.com/api' }));
+// Browser: send/store the httpOnly auth cookie cross-origin.
+const http = createHttp({ baseURL: 'https://api.app.com/api', credentials: 'include' });
 
-// shared, everywhere:
-const api = { auth: authEndpoints(http) };
-await api.auth.me();
+// Server Component: call the API as the visitor (see @shopwave/hooks/server).
+const serverHttp = createHttp({ baseURL: process.env.API_URL!, headers: { cookie } });
 
-// each app then adds its own domains on the same `http`:
-//   const api = { auth: authEndpoints(http), products: productEndpoints(http), ... }
+await authEndpoints(http).me();
 ```
 
 | Export | Purpose |
 | --- | --- |
-| `createApiClient({ baseURL })` | Configured axios instance (`withCredentials`, timeout, JSON) |
-| `createHttp(instance)` | Typed `get/post/patch/delete` helpers that unwrap `response.data` |
+| `createHttp(options)` | Typed `get/post/patch/delete` over `fetch` (`baseURL`, `headers`, `credentials`, `timeoutMs`); never HTTP-cached |
+| `HttpError` | Thrown for failed requests: the API's own `{ error: { message } }` text + `status` (`0` = network / timeout) |
+| `getErrorMessage(err)` | Any thrown value → a display string |
 | `authEndpoints(http)` | Shared auth: `me`, `login`, `register`, `logout` |
-| `getErrorMessage(err)` | Normalizes the API's `{ error: { message } }` envelope into a display string |
-| `Http` (type) | The helper shape each app's endpoint factories accept |
+| `Http` (type) | The transport shape each app's endpoint factories accept |
 
-> **Adding an endpoint?** If it's used by more than one app (like `auth`), add it here. Otherwise add it to the owning app's `src/api/*.ts` factory — see that app's `src/api/index.ts`. (Cross-cutting concerns like the error envelope still live here.)
+> **Adding an endpoint?** If it's used by more than one app (like `auth`), add it here. Otherwise add it to the owning app's `src/api/*.ts` factory and wire it into that app's `src/api/create.ts`.

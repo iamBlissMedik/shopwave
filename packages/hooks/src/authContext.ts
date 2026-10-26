@@ -8,7 +8,8 @@ export interface AuthContextValue {
   isLoading: boolean;
   login: (values: LoginValues) => Promise<User>;
   register: (values: RegisterValues) => Promise<User>;
-  logout: () => Promise<void>;
+  /** Ends the session and (by default) reloads at `/`. Pass `{ redirect: false }` to stay put. */
+  logout: (options?: { redirect?: boolean }) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);

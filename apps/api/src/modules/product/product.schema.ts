@@ -51,7 +51,9 @@ export const updateProductSchema = z.object({
       isActive: z.boolean(),
     })
     .partial()
-    .refine((data) => Object.keys(data).length > 0, { message: 'Provide at least one field to update' }),
+    .refine((data) => Object.keys(data).length > 0, {
+      message: 'Provide at least one field to update',
+    }),
 });
 
 export const listMineSchema = z.object({

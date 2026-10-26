@@ -55,57 +55,237 @@ const productPatchBody: JsonSchema = {
 /** Single source of truth for every documented route. */
 export const ROUTES: DocumentedRoute[] = [
   // Auth
-  { method: 'post', path: '/api/auth/register', tag: 'Auth', summary: 'Create a customer or merchant account', body: {
-    type: 'object', required: ['name', 'email', 'password'], properties: {
-      name: str, email: { type: 'string', format: 'email' }, password: { type: 'string', minLength: 8 },
-      role: { type: 'string', enum: ['USER', 'MERCHANT'] }, storeName: str,
-    } } },
-  { method: 'post', path: '/api/auth/login', tag: 'Auth', summary: 'Log in and receive the auth cookie', body: {
-    type: 'object', required: ['email', 'password'], properties: { email: { type: 'string', format: 'email' }, password: str } } },
+  {
+    method: 'post',
+    path: '/api/auth/register',
+    tag: 'Auth',
+    summary: 'Create a customer or merchant account',
+    body: {
+      type: 'object',
+      required: ['name', 'email', 'password'],
+      properties: {
+        name: str,
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string', minLength: 8 },
+        role: { type: 'string', enum: ['USER', 'MERCHANT'] },
+        storeName: str,
+      },
+    },
+  },
+  {
+    method: 'post',
+    path: '/api/auth/login',
+    tag: 'Auth',
+    summary: 'Log in and receive the auth cookie',
+    body: {
+      type: 'object',
+      required: ['email', 'password'],
+      properties: { email: { type: 'string', format: 'email' }, password: str },
+    },
+  },
   { method: 'post', path: '/api/auth/logout', tag: 'Auth', summary: 'Clear the auth cookie' },
-  { method: 'get', path: '/api/auth/me', tag: 'Auth', summary: 'Get the current user', secure: true },
+  {
+    method: 'get',
+    path: '/api/auth/me',
+    tag: 'Auth',
+    summary: 'Get the current user',
+    secure: true,
+  },
 
   // Products (public)
-  { method: 'get', path: '/api/products', tag: 'Products', summary: 'List, filter and sort the catalogue', query: {
-    ...page, search: str, category: str, minPrice: int, maxPrice: int,
-    sort: { type: 'string', enum: ['newest', 'price_asc', 'price_desc', 'name_asc'] } } },
-  { method: 'get', path: '/api/products/categories', tag: 'Products', summary: 'List distinct categories' },
+  {
+    method: 'get',
+    path: '/api/products',
+    tag: 'Products',
+    summary: 'List, filter and sort the catalogue',
+    query: {
+      ...page,
+      search: str,
+      category: str,
+      minPrice: int,
+      maxPrice: int,
+      sort: { type: 'string', enum: ['newest', 'price_asc', 'price_desc', 'name_asc'] },
+    },
+  },
+  {
+    method: 'get',
+    path: '/api/products/categories',
+    tag: 'Products',
+    summary: 'List distinct categories',
+  },
   { method: 'get', path: '/api/products/{id}', tag: 'Products', summary: 'Get a single product' },
 
   // Cart (guest or customer). Works anonymously via an httpOnly guest-session
   // cookie; on login/register the guest cart is merged into the account cart.
-  { method: 'get', path: '/api/cart', tag: 'Cart', summary: 'Get the current cart (guest or user)' },
-  { method: 'post', path: '/api/cart/items', tag: 'Cart', summary: 'Add an item to the cart (guest or user)', body: {
-    type: 'object', required: ['productId'], properties: { productId: str, quantity: { type: 'integer', minimum: 1, maximum: 99 } } } },
-  { method: 'patch', path: '/api/cart/items/{productId}', tag: 'Cart', summary: 'Change an item quantity', body: {
-    type: 'object', required: ['quantity'], properties: { quantity: { type: 'integer', minimum: 1, maximum: 99 } } } },
+  {
+    method: 'get',
+    path: '/api/cart',
+    tag: 'Cart',
+    summary: 'Get the current cart (guest or user)',
+  },
+  {
+    method: 'post',
+    path: '/api/cart/items',
+    tag: 'Cart',
+    summary: 'Add an item to the cart (guest or user)',
+    body: {
+      type: 'object',
+      required: ['productId'],
+      properties: { productId: str, quantity: { type: 'integer', minimum: 1, maximum: 99 } },
+    },
+  },
+  {
+    method: 'patch',
+    path: '/api/cart/items/{productId}',
+    tag: 'Cart',
+    summary: 'Change an item quantity',
+    body: {
+      type: 'object',
+      required: ['quantity'],
+      properties: { quantity: { type: 'integer', minimum: 1, maximum: 99 } },
+    },
+  },
   { method: 'delete', path: '/api/cart/items/{productId}', tag: 'Cart', summary: 'Remove an item' },
   { method: 'delete', path: '/api/cart', tag: 'Cart', summary: 'Empty the cart' },
 
   // Orders (customer)
-  { method: 'post', path: '/api/orders/checkout', tag: 'Orders', summary: 'Checkout the cart into an order (atomic)', secure: true },
-  { method: 'get', path: '/api/orders', tag: 'Orders', summary: 'List your orders', secure: true, query: page },
-  { method: 'get', path: '/api/orders/{id}', tag: 'Orders', summary: 'Get one of your orders', secure: true },
+  {
+    method: 'post',
+    path: '/api/orders/checkout',
+    tag: 'Orders',
+    summary: 'Checkout the cart into an order (atomic)',
+    secure: true,
+  },
+  {
+    method: 'get',
+    path: '/api/orders',
+    tag: 'Orders',
+    summary: 'List your orders',
+    secure: true,
+    query: page,
+  },
+  {
+    method: 'get',
+    path: '/api/orders/{id}',
+    tag: 'Orders',
+    summary: 'Get one of your orders',
+    secure: true,
+  },
 
   // Merchant (MERCHANT only)
-  { method: 'get', path: '/api/merchant/stats', tag: 'Merchant', summary: 'Store dashboard stats', secure: true },
-  { method: 'get', path: '/api/merchant/sales', tag: 'Merchant', summary: 'Sales (order-item) feed', secure: true, query: page },
-  { method: 'get', path: '/api/merchant/products', tag: 'Merchant', summary: 'List your products', secure: true, query: { ...page, search: str } },
-  { method: 'get', path: '/api/merchant/products/{id}', tag: 'Merchant', summary: 'Get one of your products', secure: true },
-  { method: 'post', path: '/api/merchant/products', tag: 'Merchant', summary: 'Create a product', secure: true, body: productBody },
-  { method: 'patch', path: '/api/merchant/products/{id}', tag: 'Merchant', summary: 'Update a product', secure: true, body: productPatchBody },
-  { method: 'delete', path: '/api/merchant/products/{id}', tag: 'Merchant', summary: 'Delete a product', secure: true },
+  {
+    method: 'get',
+    path: '/api/merchant/stats',
+    tag: 'Merchant',
+    summary: 'Store dashboard stats',
+    secure: true,
+  },
+  {
+    method: 'get',
+    path: '/api/merchant/sales',
+    tag: 'Merchant',
+    summary: 'Sales (order-item) feed',
+    secure: true,
+    query: page,
+  },
+  {
+    method: 'get',
+    path: '/api/merchant/products',
+    tag: 'Merchant',
+    summary: 'List your products',
+    secure: true,
+    query: { ...page, search: str },
+  },
+  {
+    method: 'get',
+    path: '/api/merchant/products/{id}',
+    tag: 'Merchant',
+    summary: 'Get one of your products',
+    secure: true,
+  },
+  {
+    method: 'post',
+    path: '/api/merchant/products',
+    tag: 'Merchant',
+    summary: 'Create a product',
+    secure: true,
+    body: productBody,
+  },
+  {
+    method: 'patch',
+    path: '/api/merchant/products/{id}',
+    tag: 'Merchant',
+    summary: 'Update a product',
+    secure: true,
+    body: productPatchBody,
+  },
+  {
+    method: 'delete',
+    path: '/api/merchant/products/{id}',
+    tag: 'Merchant',
+    summary: 'Delete a product',
+    secure: true,
+  },
 
   // Admin (ADMIN only)
-  { method: 'get', path: '/api/admin/stats', tag: 'Admin', summary: 'Platform-wide stats', secure: true },
-  { method: 'get', path: '/api/admin/users', tag: 'Admin', summary: 'List users', secure: true, query: {
-    ...page, search: str, role: { type: 'string', enum: ['USER', 'MERCHANT', 'ADMIN'] } } },
-  { method: 'patch', path: '/api/admin/users/{id}/role', tag: 'Admin', summary: "Change a user's role", secure: true, body: {
-    type: 'object', required: ['role'], properties: { role: { type: 'string', enum: ['USER', 'MERCHANT', 'ADMIN'] } } } },
-  { method: 'delete', path: '/api/admin/users/{id}', tag: 'Admin', summary: 'Delete a user', secure: true },
-  { method: 'get', path: '/api/admin/products', tag: 'Admin', summary: 'List every product', secure: true, query: {
-    ...page, search: str, status: { type: 'string', enum: ['active', 'inactive'] } } },
-  { method: 'patch', path: '/api/admin/products/{id}', tag: 'Admin', summary: 'Moderate a product (show/hide)', secure: true, body: productPatchBody },
+  {
+    method: 'get',
+    path: '/api/admin/stats',
+    tag: 'Admin',
+    summary: 'Platform-wide stats',
+    secure: true,
+  },
+  {
+    method: 'get',
+    path: '/api/admin/users',
+    tag: 'Admin',
+    summary: 'List users',
+    secure: true,
+    query: {
+      ...page,
+      search: str,
+      role: { type: 'string', enum: ['USER', 'MERCHANT', 'ADMIN'] },
+    },
+  },
+  {
+    method: 'patch',
+    path: '/api/admin/users/{id}/role',
+    tag: 'Admin',
+    summary: "Change a user's role",
+    secure: true,
+    body: {
+      type: 'object',
+      required: ['role'],
+      properties: { role: { type: 'string', enum: ['USER', 'MERCHANT', 'ADMIN'] } },
+    },
+  },
+  {
+    method: 'delete',
+    path: '/api/admin/users/{id}',
+    tag: 'Admin',
+    summary: 'Delete a user',
+    secure: true,
+  },
+  {
+    method: 'get',
+    path: '/api/admin/products',
+    tag: 'Admin',
+    summary: 'List every product',
+    secure: true,
+    query: {
+      ...page,
+      search: str,
+      status: { type: 'string', enum: ['active', 'inactive'] },
+    },
+  },
+  {
+    method: 'patch',
+    path: '/api/admin/products/{id}',
+    tag: 'Admin',
+    summary: 'Moderate a product (show/hide)',
+    secure: true,
+    body: productPatchBody,
+  },
 ];
 
 const secured = [{ cookieAuth: [] }, { bearerAuth: [] }];
@@ -126,14 +306,24 @@ export function buildOpenApiDocument() {
       responses: {
         '200': { description: 'Success' },
         '400': { description: 'Validation failed' },
-        ...(r.secure ? { '401': { description: 'Authentication required' }, '403': { description: 'Insufficient permissions' } } : {}),
+        ...(r.secure
+          ? {
+              '401': { description: 'Authentication required' },
+              '403': { description: 'Insufficient permissions' },
+            }
+          : {}),
       },
     };
     if (r.secure) op.security = secured;
 
     const params = [
       ...pathParams(r.path).map((name) => ({ name, in: 'path', required: true, schema: str })),
-      ...Object.entries(r.query ?? {}).map(([name, schema]) => ({ name, in: 'query', required: false, schema })),
+      ...Object.entries(r.query ?? {}).map(([name, schema]) => ({
+        name,
+        in: 'query',
+        required: false,
+        schema,
+      })),
     ];
     if (params.length) op.parameters = params;
 

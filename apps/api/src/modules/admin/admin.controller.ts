@@ -26,7 +26,12 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function listProducts(req: Request, res: Response) {
   const result = await adminService.listAllProducts(
-    req.query as unknown as { page: number; limit: number; search?: string; status?: 'active' | 'inactive' },
+    req.query as unknown as {
+      page: number;
+      limit: number;
+      search?: string;
+      status?: 'active' | 'inactive';
+    },
   );
   res.status(200).json(result);
 }

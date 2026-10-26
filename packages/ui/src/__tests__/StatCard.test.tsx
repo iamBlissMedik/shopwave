@@ -16,7 +16,9 @@ describe('StatCard', () => {
   });
 
   it('shows the hint only when provided', () => {
-    const { rerender } = render(<StatCard label="Orders" value={1} icon={DollarSign} hint="this week" />);
+    const { rerender } = render(
+      <StatCard label="Orders" value={1} icon={DollarSign} hint="this week" />,
+    );
     expect(screen.getByText('this week')).toBeInTheDocument();
 
     rerender(<StatCard label="Orders" value={1} icon={DollarSign} />);

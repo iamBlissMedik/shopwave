@@ -26,7 +26,7 @@ describe('Cart & checkout (the money path)', () => {
     const product = await createProduct(merchant, { stock: 5, price: 2500 });
     const { agent: user } = await registerAgent('USER');
 
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 });
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 }).expect(200);
     const checkout = await user.post('/api/orders/checkout');
     expect(checkout.status).toBe(201);
     expect(checkout.body.order).toMatchObject({ status: 'PAID', total: 5000 });
@@ -45,7 +45,7 @@ describe('Cart & checkout (the money path)', () => {
     const product = await createProduct(merchant, { stock: 5, price: 1000 });
     const { agent: user } = await registerAgent('USER');
 
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 3 });
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 3 }).expect(200);
     // Merchant lowers stock below what's in the cart.
     await merchant.patch(`/api/merchant/products/${product.id}`).send({ stock: 2 });
 
@@ -67,7 +67,7 @@ describe('Cart & checkout (the money path)', () => {
     const { agent: merchant } = await registerAgent('MERCHANT');
     const product = await createProduct(merchant, { stock: 10, price: 1000 });
     const { agent: user } = await registerAgent('USER');
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 });
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 }).expect(200);
 
     const key = 'idem-key-123';
     const first = await user.post('/api/orders/checkout').set('Idempotency-Key', key);
@@ -89,7 +89,7 @@ describe('Cart & checkout (the money path)', () => {
     const product = await createProduct(merchant, { stock: 50, price: 100 });
     const { agent: user } = await registerAgent('USER');
 
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 });
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 }).expect(200);
     const after = await user.post('/api/cart/items').send({ productId: product.id, quantity: 3 });
 
     // One line item, quantities summed (not overwritten, not duplicated).

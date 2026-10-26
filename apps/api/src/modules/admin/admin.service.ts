@@ -32,7 +32,13 @@ export async function listUsers(params: {
 
   const { skip, take } = toSkipTake({ page: params.page, limit: params.limit });
   const [users, total] = await Promise.all([
-    prisma.user.findMany({ where, select: userPublicSelect, orderBy: { createdAt: 'desc' }, skip, take }),
+    prisma.user.findMany({
+      where,
+      select: userPublicSelect,
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+    }),
     prisma.user.count({ where }),
   ]);
   return buildPaginatedResult(users, total, { page: params.page, limit: params.limit });
@@ -92,18 +98,19 @@ export async function getStats() {
   // The revenue chart only needs the last 14 days, so scope that query to the
   // window instead of loading every paid order (totals come from `revenueAgg`).
   const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
-  const [users, merchants, products, orders, revenueAgg, paidOrders, usersByRole] = await Promise.all([
-    prisma.user.count(),
-    prisma.user.count({ where: { role: 'MERCHANT' } }),
-    prisma.product.count({ where: { isActive: true } }),
-    prisma.order.count(),
-    prisma.order.aggregate({ _sum: { total: true }, where: { status: 'PAID' } }),
-    prisma.order.findMany({
-      where: { status: 'PAID', createdAt: { gte: since } },
-      select: { total: true, createdAt: true },
-    }),
-    prisma.user.groupBy({ by: ['role'], _count: { _all: true } }),
-  ]);
+  const [users, merchants, products, orders, revenueAgg, paidOrders, usersByRole] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { role: 'MERCHANT' } }),
+      prisma.product.count({ where: { isActive: true } }),
+      prisma.order.count(),
+      prisma.order.aggregate({ _sum: { total: true }, where: { status: 'PAID' } }),
+      prisma.order.findMany({
+        where: { status: 'PAID', createdAt: { gte: since } },
+        select: { total: true, createdAt: true },
+      }),
+      prisma.user.groupBy({ by: ['role'], _count: { _all: true } }),
+    ]);
 
   const revenueByDay = buildDailySeries(
     paidOrders.map((o) => ({ date: o.createdAt, value: o.total })),

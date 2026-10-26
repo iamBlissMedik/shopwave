@@ -9,4 +9,8 @@ export const listSalesSchema = z.object({
 });
 
 // Product create/update bodies are reused from the product module's schemas.
-export { createProductSchema, updateProductSchema, listMineSchema } from '../product/product.schema';
+export {
+  createProductSchema,
+  updateProductSchema,
+  listMineSchema,
+} from '../product/product.schema';

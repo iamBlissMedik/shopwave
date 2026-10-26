@@ -16,7 +16,7 @@ ownership checks in services (a merchant only touches their own products; admin 
 ## Scripts
 ```bash
 pnpm dev          # tsx watch (hot reload)
-pnpm build        # tsc → dist/
+pnpm build        # tsup (esbuild) → dist/
 pnpm start        # run compiled dist/index.js
 pnpm typecheck    # tsc --noEmit
 pnpm db:migrate   # prisma migrate dev
@@ -34,4 +34,4 @@ pnpm db:reset     # drop + recreate + seed
 | `src/middleware/auth.ts` | JWT cookie/bearer authentication + role authorization. |
 | `src/middleware/validate.ts` | Generic Zod request validator. |
 | `src/middleware/error.ts` | Central error handler → consistent JSON envelope. |
-| `src/modules/*` | Feature slices: auth, product, cart, order. |
+| `src/modules/*` | Feature slices: auth, product, cart, order, merchant, admin. |

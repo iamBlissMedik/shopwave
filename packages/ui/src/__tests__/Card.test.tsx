@@ -16,7 +16,11 @@ describe('Card', () => {
   });
 
   it('forwards native div attributes', () => {
-    render(<Card data-testid="card" role="group">x</Card>);
+    render(
+      <Card data-testid="card" role="group">
+        x
+      </Card>,
+    );
     expect(screen.getByTestId('card')).toHaveAttribute('role', 'group');
   });
 });

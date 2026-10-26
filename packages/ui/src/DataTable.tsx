@@ -21,6 +21,8 @@ export interface DataTableProps<T> {
   rows: T[] | undefined;
   rowKey: (row: T) => string;
   isLoading?: boolean;
+  /** A newer page/filter is loading: keep the current rows, dimmed. */
+  isFetching?: boolean;
   emptyMessage?: string;
   meta?: PaginationMeta;
   onPageChange?: (page: number) => void;
@@ -32,12 +34,15 @@ export interface DataTableProps<T> {
  *  - Mobile (<md): a stacked card list with "Label: value" rows, so wide tables
  *    stay readable on phones.
  * Pagination is wired in when `meta` + `onPageChange` are provided.
+ * Pass `isFetching` (e.g. React Query's `isPlaceholderData`) to dim the rows
+ * while the next page loads instead of flashing a spinner.
  */
 export function DataTable<T>({
   columns,
   rows,
   rowKey,
   isLoading,
+  isFetching = false,
   emptyMessage = 'No records found.',
   meta,
   onPageChange,
@@ -55,7 +60,10 @@ export function DataTable<T>({
   }
 
   return (
-    <div>
+    <div
+      aria-busy={isFetching || undefined}
+      className={clsx('transition-opacity duration-200', isFetching && 'opacity-60')}
+    >
       {/* Desktop table */}
       <Card className="hidden overflow-hidden md:block">
         <div className="overflow-x-auto">
@@ -71,9 +79,15 @@ export function DataTable<T>({
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={rowKey(row)} className="border-b border-border last:border-0 hover:bg-surface-muted/50">
+                <tr
+                  key={rowKey(row)}
+                  className="border-b border-border last:border-0 hover:bg-surface-muted/50"
+                >
                   {columns.map((col) => (
-                    <td key={col.header} className={clsx('px-4 py-3 text-foreground', col.className)}>
+                    <td
+                      key={col.header}
+                      className={clsx('px-4 py-3 text-foreground', col.className)}
+                    >
                       {col.cell(row)}
                     </td>
                   ))}

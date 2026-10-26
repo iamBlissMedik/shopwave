@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { EmptyState } from './EmptyState';
 
 /**
- * Centered error / empty-state panel used by route error boundaries and
- * not-found pages across all apps. Presentational: pass actions (a retry
+ * Centered error panel used by route error boundaries, not-found pages and
+ * failed fetches across all apps. Presentational: pass actions (a retry
  * `Button`, a `Link` home, …) as children.
  */
 export function ErrorState({
@@ -16,11 +17,14 @@ export function ErrorState({
   children?: ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-md py-20 text-center">
-      <AlertTriangle className="mx-auto mb-4 text-danger" size={40} aria-hidden />
-      <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-      <p className="mt-2 text-muted">{message}</p>
-      {children && <div className="mt-6 flex flex-wrap justify-center gap-3">{children}</div>}
-    </div>
+    <EmptyState
+      title={title}
+      message={message}
+      icon={AlertTriangle}
+      tone="danger"
+      headingLevel="h1"
+    >
+      {children}
+    </EmptyState>
   );
 }

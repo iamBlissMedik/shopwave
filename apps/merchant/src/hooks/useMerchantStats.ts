@@ -1,12 +1,7 @@
-'use client';
-
 import { useQuery } from '@tanstack/react-query';
-import { qk } from '@shopwave/hooks';
 import { api } from '@/api';
+import { statsQuery } from '@/queries';
 
 export function useMerchantStats() {
-  return useQuery({
-    queryKey: qk.merchantStats(),
-    queryFn: () => api.merchant.stats(),
-  });
+  return useQuery(statsQuery(api));
 }

@@ -27,12 +27,17 @@ describe('Merchant dashboard', () => {
     const { agent: merchant } = await registerAgent('MERCHANT');
     const product = await createProduct(merchant, { price: 2500, stock: 10 });
     const { agent: user } = await registerAgent('USER');
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 });
-    await user.post('/api/orders/checkout');
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 2 }).expect(200);
+    await user.post('/api/orders/checkout').expect(201);
 
     const res = await merchant.get('/api/merchant/stats');
     expect(res.status).toBe(200);
-    expect(res.body.totals).toMatchObject({ totalProducts: 1, activeProducts: 1, unitsSold: 2, totalRevenue: 5000 });
+    expect(res.body.totals).toMatchObject({
+      totalProducts: 1,
+      activeProducts: 1,
+      unitsSold: 2,
+      totalRevenue: 5000,
+    });
     expect(Array.isArray(res.body.revenueByDay)).toBe(true);
     expect(res.body.topProducts[0]).toMatchObject({ revenue: 5000 });
   });
@@ -41,8 +46,8 @@ describe('Merchant dashboard', () => {
     const { agent: merchant } = await registerAgent('MERCHANT');
     const product = await createProduct(merchant, { price: 1000, stock: 5 });
     const { agent: user } = await registerAgent('USER');
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 3 });
-    await user.post('/api/orders/checkout');
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 3 }).expect(200);
+    await user.post('/api/orders/checkout').expect(201);
 
     const res = await merchant.get('/api/merchant/sales');
     expect(res.status).toBe(200);
@@ -58,8 +63,8 @@ describe('Admin console', () => {
     const { agent: merchant } = await registerAgent('MERCHANT');
     const product = await createProduct(merchant, { price: 4000, stock: 10 });
     const { agent: user } = await registerAgent('USER');
-    await user.post('/api/cart/items').send({ productId: product.id, quantity: 1 });
-    await user.post('/api/orders/checkout');
+    await user.post('/api/cart/items').send({ productId: product.id, quantity: 1 }).expect(200);
+    await user.post('/api/orders/checkout').expect(201);
 
     const { agent: admin } = await adminAgent();
     const res = await admin.get('/api/admin/stats');
@@ -109,7 +114,8 @@ describe('Admin console', () => {
     expect(del.status).toBe(200);
 
     // Find the admin's own id and try to self-delete → 400.
-    const adminRow = (await admin.get('/api/admin/users?search=' + encodeURIComponent(email))).body.data[0];
+    const adminRow = (await admin.get('/api/admin/users?search=' + encodeURIComponent(email))).body
+      .data[0];
     const self = await admin.delete(`/api/admin/users/${adminRow.id}`);
     expect(self.status).toBe(400);
   });

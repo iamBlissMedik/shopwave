@@ -16,7 +16,9 @@ export async function listSales(merchantId: string, page: number, limit: number)
       where,
       include: {
         product: { select: { id: true, name: true, imageUrl: true } },
-        order: { select: { id: true, status: true, createdAt: true, user: { select: { name: true } } } },
+        order: {
+          select: { id: true, status: true, createdAt: true, user: { select: { name: true } } },
+        },
       },
       orderBy: { order: { createdAt: 'desc' } },
       skip,

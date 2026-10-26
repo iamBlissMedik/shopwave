@@ -6,7 +6,7 @@ role-scoped frontends (`user`, `merchant`, `admin`). Each case lists
 **covered** (automated test file, or the manual live run on 2026-06-17).
 
 - ✅ = verified (automated and/or live). All cases below are currently passing.
-- **Automated suites:** `apps/api` (41, Vitest + Supertest), `packages/ui` (56, Vitest + Testing Library), `packages/hooks` (6, query keys / notify), `packages/api-client` (4, error normalization), `apps/user` (1, catalogue data-hook). **108 total** across 5 workspaces.
+- **Automated suites:** `apps/api` (41, Vitest + Supertest), `packages/ui` (63, Vitest + Testing Library), `packages/hooks` (19, query keys / URL state / notify / redirect sanitizing), `packages/api-client` (8, fetch transport + error normalization), `apps/user` (4, URL filter parsing + catalogue data-hook). **135 total** across 5 workspaces. Browser-level flows below marked *live* were exercised in headless Chrome against production builds.
 - **Live smoke run:** API on `:4000` against the seeded `shopwave` DB; apps on `:3000/:3002/:3005`.
 
 ## How to run
@@ -110,7 +110,7 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 
 ### TC-CART-05 — Cart UX: badge & exit animation ✅
 - **Acceptance:** *When* an item is added, *then* the navbar cart badge springs/pops to the new count; *when* an item is removed on `/cart`, *then* the row animates out and the rest slide up; reduced-motion users get no animation.
-- **Covered:** manual (motion via `@shopwave/ui` + `MotionConfig reducedMotion="user"`).
+- **Covered:** live (badge = CSS `animate-pop-in`; cart rows = Framer Motion `AnimatePresence` + `layout` under `MotionConfig reducedMotion="user"`).
 
 ### TC-CART-06 — Guest cart + merge-on-login ✅
 - **Acceptance:** *Given* an anonymous visitor, *when* they `POST /api/cart/items`, *then* `200` and a server cart is created keyed by an httpOnly `cart_sid` cookie (cross-request, isolated per session). *When* they then log in / register, *then* the guest cart is **merged into their account cart** (quantities summed, clamped to stock) and the `cart_sid` cookie is cleared. Cart follows the account cross-device thereafter.
@@ -235,12 +235,16 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Covered:** `rateLimit.ts`; live (helmet headers observed).
 
 ### TC-SEC-07 — Frontend route gating ✅
-- **Acceptance:** *Given* a guest, *when* visiting a protected route, *then* edge middleware redirects to that app's `/login` (`307`): user `/cart`,`/orders`; merchant & admin everything except `/login`. `RoleGuard` redirects wrong-role users client-side. (Defense in depth — the API is the real boundary.)
+- **Acceptance:** *Given* a visitor with no auth cookie, *when* visiting a protected route, *then* `proxy.ts` redirects to that app's `/login?redirect=…` (`307`): user `/orders` (the cart is guest-accessible — see TC-CART-06); merchant & admin everything except `/login`. *Given* a cookie that is forged/expired or for the wrong role, *then* the server (dashboard layout / orders page, via `getServerUser`) redirects to `/login` before any page HTML is rendered — no client-side "checking access" step. (Defense in depth — the API is the real boundary.)
 - **Covered:** live (`307` redirects observed on all three apps).
 
 ### TC-SEC-08 — Wrong-audience login ✅
-- **Acceptance:** *Given* a USER logging into the merchant or admin app, *then* a clear error and no dashboard access.
-- **Covered:** per-app login role check.
+- **Acceptance:** *Given* a USER logging into the merchant or admin app, *then* a clear error, the just-created session is logged out, and no dashboard access.
+- **Covered:** shared `LoginForm` `role` gate (`@shopwave/hooks`).
+
+### TC-SEC-09 — No open redirect after login ✅
+- **Acceptance:** *Given* `/login?redirect=<target>`, *when* login succeeds, *then* only same-app relative paths are followed; absolute (`https://…`), protocol-relative (`//…`) and `/login` targets fall back to `/`.
+- **Covered:** `packages/hooks` `safeRedirect.test.ts` (3 cases).
 
 ---
 
@@ -263,8 +267,8 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Covered:** live.
 
 ### TC-FE-02 — Storefront browse → detail → add to cart ✅
-- **Acceptance:** *Given* the storefront, *when* a guest clicks Add, *then* they're routed to `/login?redirect=…`; *given* a logged-in USER, *then* the item is added and the badge updates.
-- **Covered:** live (pages serve, gating works) + hooks unit-level.
+- **Acceptance:** *Given* the storefront, *when* a guest or logged-in USER clicks Add, *then* the item is added to their (session or account) cart and the badge updates. *Given* a guest on `/cart`, *then* the checkout button reads "Log in to checkout" and links to `/login?redirect=/cart`; after login the merged cart is shown.
+- **Covered:** live (pages serve, gating works) + `cart-guest.test.ts` + hooks unit-level.
 
 ### TC-FE-03 — Shared UI: ProductCard states ✅
 - **Acceptance:** renders name/category/price; Add button calls `onAdd`; out-of-stock disables the button ("Sold out"); non-buyers see no Add button.
@@ -275,12 +279,12 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Covered:** `packages/ui` `DashboardShell.test.tsx` (3 cases) + stories.
 
 ### TC-FE-05 — Theming (light/dark/system) ✅
-- **Acceptance:** toggle cycles light → dark → system; choice persists; no flash of wrong theme on reload (inline no-flash script); the theme-toggle icon animates on change.
+- **Acceptance:** toggle cycles light → dark → system; choice persists; no flash of wrong theme on reload (inline no-flash script, and the provider never applies a theme before reading the stored one); the theme-toggle icon animates on change.
 - **Covered:** `@shopwave/hooks` `useTheme` + `themeNoFlashScript`; manual.
 
 ### TC-FE-06 — Motion is accessible ✅
-- **Acceptance:** page transitions, grid stagger, badge pop, cart-row exit are present; *given* OS "reduce motion", *then* animations are suppressed globally.
-- **Covered:** `MotionConfig reducedMotion="user"` in `AppProviders`; manual.
+- **Acceptance:** page transitions, grid stagger, badge pop, theme-icon spin and theme cross-fade, chart fade-in and cart-row exit are present; entrances animate only `opacity`/`transform` and play on server-rendered HTML (no `opacity:0` waiting on JS); loading states appear only after ~150ms; *given* OS "reduce motion", *then* every animation is suppressed (spinners excepted).
+- **Covered:** live — headless Chrome with `prefers-reduced-motion: reduce` measures `animation-duration` ≈ 0 and `scroll-behavior: auto`; `Stagger.test.tsx` (delays).
 
 ### TC-FE-07 — Responsive layout ✅
 - **Acceptance:** storefront grid is 2/3/4 columns at sm/md/lg; dashboards show a sidebar on desktop and a scrollable tab strip on mobile.
@@ -302,6 +306,14 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Acceptance:** *When* visiting an unknown route, *then* the app responds `404` and renders the "Page not found" `ErrorState` with a **Go home** link.
 - **Covered:** per-app `not-found.tsx`; live (`404` + "Page not found" on `/this-route-does-not-exist`).
 
+### TC-FE-13 — Server-rendered pages hydrate without refetching ✅
+- **Acceptance:** *Given* any page (catalogue, product, orders, dashboards), *then* the first HTML already contains its data (products, orders, stats, table rows, the signed-in navbar) and the browser does not refetch it on load; *given* filters/pagination, *then* they live in the URL (`?category=Audio&page=2`), are server-rendered on reload and restored by Back; there are no hydration warnings in the console.
+- **Covered:** live (HTML inspection + headless Chrome: URL updates, Back, zero console errors); `useUrlFilters.test.ts`, `searchParams.test.ts`, `queries.test.ts`, `queryKeys.test.ts`.
+
+### TC-FE-14 — Storefront SEO ✅
+- **Acceptance:** product pages have their own `<title>`, description, canonical URL and Open Graph image; an unknown product returns HTTP `404` (for browsers and crawlers); `/sitemap.xml` lists every active product; `/robots.txt` disallows cart/orders/auth; merchant & admin apps send `noindex, nofollow`.
+- **Covered:** live (`curl` against production builds).
+
 ### TC-FE-12 — API error envelope is production-safe ✅
 - **Acceptance:** *Given* any backend error, *then* the response is `{ error: { message, details? } }`; **no stack traces** in production; unique-constraint → `409`, missing record → `404`, unexpected → `500` (logged). The frontend reads this consistent shape everywhere.
 - **Covered:** `apps/api/src/middleware/error.ts` + `ApiError`.
@@ -319,7 +331,7 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Covered:** live.
 
 ### TC-BLD-03 — Tests green ✅
-- **Acceptance:** `pnpm test` runs 108 cases (41 API + 56 UI + 6 hooks + 4 api-client + 1 user), all passing — gated in CI ([.github/workflows/ci.yml](../.github/workflows/ci.yml)).
+- **Acceptance:** `pnpm test` runs 135 cases (41 API + 63 UI + 19 hooks + 8 api-client + 4 user), all passing — gated in CI alongside `pnpm lint`, `pnpm typecheck` and `pnpm build` ([.github/workflows/ci.yml](../.github/workflows/ci.yml)).
 - **Covered:** live.
 
 ---

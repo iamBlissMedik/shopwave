@@ -1,9 +1,9 @@
-// The admin console's own API surface. Built on the shared transport (`http`)
-// from @shopwave/hooks; the admin endpoint definitions live here so only this
-// app ships them.
+// The admin console's browser API client: this app's own endpoints on the
+// shared transport (`http`) from @shopwave/hooks.
 import { http } from '@shopwave/hooks';
-import { adminEndpoints, type AdminUserFilters, type AdminProductFilters } from './admin';
+import { createApi } from './create';
 
-export const api = { admin: adminEndpoints(http) };
+export const api = createApi(http);
 
-export type { AdminUserFilters, AdminProductFilters };
+export type { Api } from './create';
+export type { AdminUserFilters, AdminProductFilters } from './admin';

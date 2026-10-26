@@ -22,6 +22,5 @@ export function merchantEndpoints(http: Http) {
       http.post<{ product: Product }>('/merchant/products', payload),
     updateProduct: (id: string, payload: Partial<ProductPayload> & { isActive?: boolean }) =>
       http.patch<{ product: Product }>(`/merchant/products/${id}`, payload),
-    deleteProduct: (id: string) => http.delete<{ message: string }>(`/merchant/products/${id}`),
   };
 }

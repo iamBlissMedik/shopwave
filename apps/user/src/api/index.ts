@@ -1,15 +1,9 @@
-// The storefront's own API surface. Built on the shared transport (`http`) from
-// @shopwave/hooks, but the endpoint definitions live here so this app owns —
-// and only ships — the domains it actually uses: catalogue, cart and orders.
+// The storefront's browser API client: this app's own endpoints (catalogue,
+// cart, orders) on the shared transport (`http`) from @shopwave/hooks.
 import { http } from '@shopwave/hooks';
-import { productEndpoints, type ProductFilters } from './products';
-import { cartEndpoints } from './cart';
-import { orderEndpoints } from './orders';
+import { createApi } from './create';
 
-export const api = {
-  products: productEndpoints(http),
-  cart: cartEndpoints(http),
-  orders: orderEndpoints(http),
-};
+export const api = createApi(http);
 
-export type { ProductFilters };
+export type { Api } from './create';
+export type { ProductFilters } from './products';

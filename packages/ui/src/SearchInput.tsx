@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
+import { clsx } from 'clsx';
+import { fieldClasses } from './Input';
 
 /**
  * Debounced search box. Calls `onSearch` ~400ms after the user stops typing,
@@ -31,13 +33,18 @@ export function SearchInput({
 
   return (
     <div className="relative w-full">
-      <Search size={16} className="absolute left-3 top-2.5 text-muted" />
+      <Search
+        size={16}
+        className="pointer-events-none absolute left-3 top-2.5 text-muted"
+        aria-hidden
+      />
       <input
         type="search"
         value={local}
         onChange={(e) => setLocal(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-border bg-surface py-2 pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted focus:ring-2 focus:ring-brand/40"
+        aria-label={placeholder}
+        className={clsx(fieldClasses, 'w-full border-border pl-9')}
       />
     </div>
   );

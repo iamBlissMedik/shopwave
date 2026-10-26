@@ -1,5 +1,3 @@
-'use client';
-
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { notify } from '@shopwave/hooks';
@@ -10,15 +8,19 @@ export function useUpdateProduct() {
   const invalidate = useInvalidateMerchant();
   const router = useRouter();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Partial<ProductPayload> & { isActive?: boolean } }) =>
-      api.merchant.updateProduct(id, payload),
-    onSuccess: (_data, vars) => {
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Partial<ProductPayload> & { isActive?: boolean };
+    }) => api.merchant.updateProduct(id, payload),
+    onSuccess: (_data, { payload }) => {
       invalidate();
       notify.success('Product updated');
-      // A simple toggle (isActive only) stays on the list; a full edit returns to it too.
-      if (!('isActive' in vars.payload) || Object.keys(vars.payload).length > 1) {
-        router.push('/products'); // merchant-app route
-      }
+      // A Hide/Show toggle stays on the list; a full edit navigates back to it.
+      const isVisibilityToggle = Object.keys(payload).length === 1 && 'isActive' in payload;
+      if (!isVisibilityToggle) router.push('/products'); // merchant-app route
     },
     onError: (error) => notify.error(error),
   });

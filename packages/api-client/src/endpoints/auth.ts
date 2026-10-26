@@ -1,5 +1,5 @@
 import type { User, LoginValues, RegisterValues } from '@shopwave/types';
-import type { Http } from '../client';
+import type { Http } from '../http';
 
 /** Auth endpoints. Tokens live in an httpOnly cookie set by the API. */
 export function authEndpoints(http: Http) {

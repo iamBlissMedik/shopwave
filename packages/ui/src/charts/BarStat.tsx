@@ -1,7 +1,7 @@
 'use client';
 
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { CHART } from '../chart';
+import { CHART, chartTooltipStyle } from '../chart';
 import { Card } from '../Card';
 
 export interface BarDatum {
@@ -21,14 +21,18 @@ export interface BarStatProps {
  */
 export function BarStat({ data, title, valueFormatter = (v) => String(v) }: BarStatProps) {
   return (
-    <Card className="p-4">
+    <Card className="animate-fade-in p-4">
       <h3 className="mb-4 text-sm font-semibold text-foreground">{title}</h3>
       {data.length === 0 ? (
         <p className="py-12 text-center text-sm text-muted">No data yet.</p>
       ) : (
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, left: 8, bottom: 0 }}>
+            <BarChart
+              data={data}
+              layout="vertical"
+              margin={{ top: 0, right: 16, left: 8, bottom: 0 }}
+            >
               <XAxis type="number" hide />
               <YAxis
                 type="category"
@@ -39,11 +43,17 @@ export function BarStat({ data, title, valueFormatter = (v) => String(v) }: BarS
                 width={110}
               />
               <Tooltip
-                formatter={(v: number) => [valueFormatter(v), '']}
+                formatter={(v) => [valueFormatter(Number(v)), '']}
                 cursor={{ fill: CHART.grid }}
-                contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12, color: '#0f172a' }}
+                contentStyle={chartTooltipStyle}
               />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={18}>
+              <Bar
+                dataKey="value"
+                radius={[0, 4, 4, 0]}
+                barSize={18}
+                animationDuration={800}
+                animationEasing="ease-out"
+              >
                 {data.map((_, i) => (
                   <Cell key={i} fill={CHART.series[i % CHART.series.length]} />
                 ))}

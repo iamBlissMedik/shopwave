@@ -16,7 +16,9 @@ const meta = (over: Partial<PaginationMeta> = {}): PaginationMeta => ({
 
 describe('Pagination', () => {
   it('renders nothing for a single page', () => {
-    const { container } = render(<Pagination meta={meta({ totalPages: 1 })} onPageChange={() => {}} />);
+    const { container } = render(
+      <Pagination meta={meta({ totalPages: 1 })} onPageChange={() => {}} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 

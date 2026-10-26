@@ -25,7 +25,9 @@ describe('DataTable', () => {
   });
 
   it('renders the empty message when there are no rows', () => {
-    render(<DataTable columns={columns} rows={[]} rowKey={(r) => r.id} emptyMessage="Nothing here" />);
+    render(
+      <DataTable columns={columns} rows={[]} rowKey={(r) => r.id} emptyMessage="Nothing here" />,
+    );
     expect(screen.getByText('Nothing here')).toBeInTheDocument();
   });
 
@@ -35,5 +37,14 @@ describe('DataTable', () => {
     expect(screen.getAllByText('Keyboard').length).toBeGreaterThan(0);
     expect(screen.getAllByText('$45').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Name').length).toBeGreaterThan(0);
+  });
+
+  it('keeps the rows visible but dimmed while a newer page is fetching', () => {
+    const { container } = render(
+      <DataTable columns={columns} rows={rows} rowKey={(r) => r.id} isFetching />,
+    );
+    expect(screen.getAllByText('Keyboard').length).toBeGreaterThan(0);
+    expect(container.firstElementChild).toHaveClass('opacity-60');
+    expect(container.firstElementChild).toHaveAttribute('aria-busy', 'true');
   });
 });

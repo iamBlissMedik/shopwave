@@ -1,46 +1,76 @@
-'use client';
-
+import { cache } from 'react';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { ArrowLeft, ShoppingCart, Store } from 'lucide-react';
-import { useAuth } from '@shopwave/hooks';
-import { useProduct, useAddToCart } from '@/hooks';
-import { Button, formatPrice, LoadingState } from '@shopwave/ui';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, Store } from 'lucide-react';
+import { HttpError } from '@shopwave/api-client';
+import { formatPrice } from '@shopwave/ui';
+import { getServerApi } from '@/api/server';
+import { AddToCartButton } from '@/components/AddToCartButton';
 
-export default function ProductDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
-  const { data: product, isLoading, isError } = useProduct(id);
-  const addToCart = useAddToCart();
+/**
+ * Product detail — fully server-rendered (crawlable, with real metadata); only
+ * the add-to-cart button ships as client JavaScript. `cache` shares one API
+ * call between `generateMetadata` and the page within a request.
+ */
+const getProduct = cache(async (id: string) => {
+  const api = await getServerApi();
+  try {
+    return await api.products.get(id);
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 404) notFound();
+    throw error;
+  }
+});
 
-  if (isLoading) return <LoadingState />;
-  if (isError || !product) return <p className="py-12 text-center text-danger">Product not found.</p>;
+export async function generateMetadata({ params }: PageProps<'/products/[id]'>): Promise<Metadata> {
+  const product = await getProduct((await params).id);
+  return {
+    title: product.name,
+    description: product.description,
+    alternates: { canonical: `/products/${product.id}` },
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [{ url: product.imageUrl, width: 600, height: 600, alt: product.name }],
+    },
+  };
+}
 
+export default async function ProductDetailPage({ params }: PageProps<'/products/[id]'>) {
+  const product = await getProduct((await params).id);
   const outOfStock = product.stock <= 0;
-  // Guests and customers can add to cart; merchant/admin accounts cannot.
-  const canBuy = !user || user.role === 'USER';
-
-  // Guests get a server-side session cart (merged into their account on login).
-  const handleAdd = () => addToCart.mutate({ productId: product.id, quantity: 1 });
 
   return (
     <div>
-      <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-muted hover:text-brand">
-        <ArrowLeft size={16} /> Back to products
+      <Link
+        href="/"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-brand"
+      >
+        <ArrowLeft size={16} aria-hidden /> Back to products
       </Link>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-lg bg-surface-muted">
-          <Image src={product.imageUrl} alt={product.name} fill className="object-cover" priority />
+        <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface-muted">
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
+            preload
+          />
         </div>
 
         <div>
-          <span className="text-sm font-medium uppercase tracking-wide text-brand">{product.category}</span>
+          <span className="text-sm font-medium uppercase tracking-wide text-brand">
+            {product.category}
+          </span>
           <h1 className="mt-1 text-3xl font-bold">{product.name}</h1>
           {product.merchant?.storeName && (
             <p className="mt-2 inline-flex items-center gap-1 text-sm text-muted">
-              <Store size={14} /> Sold by {product.merchant.storeName}
+              <Store size={14} aria-hidden /> Sold by {product.merchant.storeName}
             </p>
           )}
           <p className="mt-4 text-2xl font-bold">{formatPrice(product.price)}</p>
@@ -54,11 +84,7 @@ export default function ProductDetailPage() {
             )}
           </p>
 
-          {canBuy && (
-            <Button onClick={handleAdd} disabled={outOfStock} isLoading={addToCart.isPending} className="mt-6 w-full sm:w-auto">
-              <ShoppingCart size={18} /> Add to cart
-            </Button>
-          )}
+          <AddToCartButton productId={product.id} outOfStock={outOfStock} />
         </div>
       </div>
     </div>
