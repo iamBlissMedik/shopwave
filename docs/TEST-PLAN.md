@@ -235,7 +235,7 @@ Money is integer **cents** everywhere (`12999` = `$129.99`).
 - **Covered:** `rateLimit.ts`; live (helmet headers observed).
 
 ### TC-SEC-07 — Frontend route gating ✅
-- **Acceptance:** *Given* a visitor with no auth cookie, *when* visiting a protected route, *then* `proxy.ts` redirects to that app's `/login?redirect=…` (`307`): user `/orders` (the cart is guest-accessible — see TC-CART-06); merchant & admin everything except `/login`. *Given* a cookie that is forged/expired or for the wrong role, *then* the server (dashboard layout / orders page, via `getServerUser`) redirects to `/login` before any page HTML is rendered — no client-side "checking access" step. (Defense in depth — the API is the real boundary.)
+- **Acceptance:** *Given* a visitor with no auth cookie, *when* visiting a protected route, *then* `proxy.ts` redirects to that app's `/login?redirect=…` (`307`): user `/orders` (the cart is guest-accessible — see TC-CART-06); merchant & admin everything except `/login`. *Given* a cookie that is forged/expired or for the wrong role, *then* the server (dashboard layout / orders page, via `getServerUser` + `redirectToLogin`) redirects to `/login?redirect=<the requested page, query included>` before any page HTML is rendered — no client-side "checking access" step. *Given* the API is unreachable or returns a 5xx while checking the session, *then* the page shows its error boundary with a retry instead of redirecting to `/login`, and the "signed out" state is not cached on the client. (Defense in depth — the API is the real boundary.)
 - **Covered:** live (`307` redirects observed on all three apps).
 
 ### TC-SEC-08 — Wrong-audience login ✅

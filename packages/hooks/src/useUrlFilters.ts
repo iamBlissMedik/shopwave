@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 type FilterValue = string | number | undefined;
@@ -31,10 +31,18 @@ export function useUrlFilters<T extends { [K in keyof T]: FilterValue }>(
   );
   const defaults = useMemo(() => parse(new URLSearchParams()), [parse]);
 
+  // Always merge onto the *latest* filters, not the ones captured when the
+  // caller rendered: a debounced search box fires a callback from an earlier
+  // render, and must not undo a filter changed in the meantime.
+  const latest = useRef(filters);
+  useLayoutEffect(() => {
+    latest.current = filters;
+  }, [filters]);
+
   const setFilters = useCallback(
     (patch: Partial<T>) => {
       const isPageChange = 'page' in patch;
-      const next: Record<string, FilterValue> = { ...filters, ...patch };
+      const next: Record<string, FilterValue> = { ...latest.current, ...patch };
       if (!isPageChange && 'page' in next) next.page = 1;
 
       const params = new URLSearchParams();
@@ -52,7 +60,7 @@ export function useUrlFilters<T extends { [K in keyof T]: FilterValue }>(
         window.history.replaceState(null, '', url);
       }
     },
-    [filters, defaults],
+    [defaults],
   );
 
   return [filters, setFilters] as const;

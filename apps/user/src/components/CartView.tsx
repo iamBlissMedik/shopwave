@@ -22,13 +22,13 @@ import {
  * only loaded on this route), plus the order summary and checkout.
  */
 export function CartView() {
-  const { user, isLoading: isAuthLoading } = useAuth();
+  const { user, status: authStatus } = useAuth();
   const { data: cart, isLoading } = useCart();
   const updateItem = useUpdateCartItem();
   const removeItem = useRemoveCartItem();
   const checkout = useCheckout();
 
-  if (isLoading || isAuthLoading) return <LoadingState message="Loading cart…" />;
+  if (isLoading || authStatus === 'loading') return <LoadingState message="Loading cart…" />;
 
   if (!cart || cart.items.length === 0) {
     return (
@@ -162,7 +162,7 @@ export function CartView() {
             >
               Checkout
             </Button>
-          ) : (
+          ) : authStatus === 'signed-out' ? (
             // Guests keep their cart: it merges into the account on login.
             <Link
               href="/login?redirect=/cart"
@@ -170,6 +170,11 @@ export function CartView() {
             >
               Log in to checkout
             </Link>
+          ) : (
+            // Session unknown (API unreachable): don't ask a signed-in shopper to log in.
+            <Button disabled className="mt-6 w-full">
+              Checkout unavailable — try again shortly
+            </Button>
           )}
           <p className="mt-2 text-center text-xs text-muted">
             Demo checkout — no real payment is taken.

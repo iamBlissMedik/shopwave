@@ -4,7 +4,8 @@
 // app that owns them, under that app's `src/hooks`.
 //
 // Server Components import server-only helpers from `@shopwave/hooks/server`,
-// and `proxy.ts` files import `@shopwave/hooks/proxy`.
+// root layouts render `AppShell` from `@shopwave/hooks/shell`, and `proxy.ts`
+// files import `@shopwave/hooks/proxy`.
 
 export { api, http, getErrorMessage } from './client';
 export { notify } from './notify';
@@ -17,6 +18,7 @@ export { toURLSearchParams, readEnum, readInt, readPage, readString } from './se
 export { AppProviders } from './AppProviders';
 export { AuthProvider } from './AuthProvider';
 export { useAuth } from './useAuth';
+export type { AuthStatus } from './authContext';
 export { ThemeProvider } from './ThemeProvider';
 export { useTheme } from './useTheme';
 export { themeNoFlashScript } from './themeNoFlashScript';
